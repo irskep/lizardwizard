@@ -69,7 +69,8 @@ class Scene(object):
     def load(self):
         dict_repr = util.load_yaml('levels', self.name)
         self.terrain = terrain.Terrain(self.batch, self.space, dict_repr['terrain'])
-        self.players = [player.Player(self, self.batch, 1, 640, 340)]
+        px, py = self.terrain.place(*dict_repr['playerstart'])
+        self.players = [player.Player(self, self.batch, 1, px, py)]
         for p in self.players:
             self.actors[p.name] = p
         

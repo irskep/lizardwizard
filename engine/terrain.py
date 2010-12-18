@@ -43,7 +43,7 @@ class Terrain(object):
                 if cell < t:
                     points.extend((col_ix*ts+ts//2, row_ix*ts+ts//2))
         n = len(points)//2
-        c = (0.81, 0.357, 0.255, 1.0)
+        c = self.fill_color
         self.batch.add(n, pyglet.gl.GL_POINTS, None,
                       ('v2f/static', points),
                       ('c4f/static', c*n))
@@ -100,14 +100,14 @@ class Terrain(object):
                         lines.append(p)
                         triangles.append(p + (col_ix*ts+hts, row_ix*ts-hts))
         n = len(lines)*2
-        c = (1.0, 1.0, 1.0, 1.0)
+        c = self.line_color
         coords = list(itertools.chain(*lines))
         vl = self.batch.add(n, pyglet.gl.GL_LINES, None,
                             ('v2f/static', coords), 
                             ('c4f/static', c*n))
         self.vls.add(vl)
         nt = len(triangles)*3
-        ct = (0.81, 0.357, 0.255, 1.0)
+        ct = self.fill_color
         coordst = list(itertools.chain(*triangles))
         vlt = self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
                              ('v2f/static', coordst), 
@@ -153,7 +153,7 @@ class Terrain(object):
                     ))
                 row_ix += 1
         nt = len(triangles)/2
-        ct = (0.81, 0.357, 0.255, 1.0)
+        ct = self.fill_color
         vlt = self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
                              ('v2f/static', triangles), 
                              ('c4f/static', ct*nt))
@@ -168,10 +168,14 @@ class Terrain(object):
     def wall(self, x, y):
         in_bounds = (0 < x < self.width-1) and (0 < y < self.height-1)
         return (in_bounds and self.grid[x][y] < self.dict_repr['threshold']) or not in_bounds
-        
+    
+    def place(self, x, y):
+        return x*gamestate.TILE_SIZE, y*gamestate.TILE_SIZE
     
     width = property(lambda self: self.dict_repr['size'][0])
     height = property(lambda self: self.dict_repr['size'][1])
+    fill_color = property(lambda self: self.dict_repr['fill'])
+    line_color = property(lambda self: self.dict_repr['stroke'])
     
     pixelwidth = property(lambda self: self.dict_repr['size'][0]*gamestate.TILE_SIZE)
     pixelheight = property(lambda self: self.dict_repr['size'][1]*gamestate.TILE_SIZE)
