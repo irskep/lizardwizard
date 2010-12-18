@@ -6,52 +6,28 @@ import pymunk
 import gamestate
 
 class Terrain(object):
-    def __init__(self, batch, space, dict_repr):
+    def __init__(self, batch, space, grid):
         super(Terrain, self).__init__()
         self.batch = batch
         self.space = space
-        self.dict_repr = dict_repr
+        self.grid = grid
         
         self.body = pymunk.Body(pymunk.inf, pymunk.inf)
         
         self.vls = set()
         self.objs = set()
         
-        octaves = 1
+        self.width = len(self.grid[0])
+        self.height = len(self.grid)
         
-        x_off, y_off = self.dict_repr['position']
+        self.fill_color = [0.5, 0.3, 0.255, 1.0]
+        self.line_color = [1.0, 1.0, 1.0, 1.0]
         
-        freq=1024
-        scale = 0.1
-        
-        def nf(x, y):
-            if 0 < x < self.width-1 and 0 < y < self.height-1:
-                return int((noise.pnoise2((x+x_off)*scale, (y+y_off)*scale, 
-                                           repeatx=freq, repeaty=freq) + 1.0) * 100)
-            else:
-                return 0
-        
-        self.grid = [[nf(x, y) for y in range(self.height)] for x in range(self.width)]
         self.instantiate_lines()
-    
-    def instantiate_points(self):
-        points = []
-        t = self.dict_repr['threshold']
-        ts = gamestate.TILE_SIZE
-        for col_ix, col in enumerate(self.grid):
-            for row_ix, cell in enumerate(col):
-                if cell < t:
-                    points.extend((col_ix*ts+ts//2, row_ix*ts+ts//2))
-        n = len(points)//2
-        c = self.fill_color
-        self.batch.add(n, pyglet.gl.GL_POINTS, None,
-                      ('v2f/static', points),
-                      ('c4f/static', c*n))
     
     def instantiate_lines(self):
         lines = []
         triangles = []
-        t = self.dict_repr['threshold']
         ts = gamestate.TILE_SIZE
         hts = ts//2
         wall = self.wall
@@ -166,16 +142,9 @@ class Terrain(object):
             self.objs.add(l)
     
     def wall(self, x, y):
-        in_bounds = (0 < x < self.width-1) and (0 < y < self.height-1)
-        return (in_bounds and self.grid[x][y] < self.dict_repr['threshold']) or not in_bounds
+        return self.grid[y][x] == 'X'
+        # in_bounds = (0 < x < self.width-1) and (0 < y < self.height-1)
+        # return (in_bounds and self.grid[x][y] < self.dict_repr['threshold']) or not in_bounds
     
     def place(self, x, y):
         return x*gamestate.TILE_SIZE, y*gamestate.TILE_SIZE
-    
-    width = property(lambda self: self.dict_repr['size'][0])
-    height = property(lambda self: self.dict_repr['size'][1])
-    fill_color = property(lambda self: self.dict_repr['fill'])
-    line_color = property(lambda self: self.dict_repr['stroke'])
-    
-    pixelwidth = property(lambda self: self.dict_repr['size'][0]*gamestate.TILE_SIZE)
-    pixelheight = property(lambda self: self.dict_repr['size'][1]*gamestate.TILE_SIZE)

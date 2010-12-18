@@ -67,16 +67,33 @@ class Scene(object):
         del self.actors[act.name]
     
     def load(self):
-        dict_repr = util.load_yaml('levels', self.name)
-        self.terrain = terrain.Terrain(self.batch, self.space, dict_repr['terrain'])
-        px, py = self.terrain.place(*dict_repr['playerstart'])
-        self.players = [player.Player(self, self.batch, 1, px, py)]
+        self.grid = []
+        with pyglet.resource.file('game/levels/%s.txt' % self.name) as f:
+            for line in f:
+                row = line.split()
+                self.width = len(row)
+                self.grid.append(row)
+            self.height = len(self.grid)
+        
+        data = {}
+        for y, row in enumerate(self.grid):
+            for x, char in enumerate(row):
+                if char == 'P':
+                    data['playerstart'] = (x*gamestate.TILE_SIZE+gamestate.TILE_SIZE//2,
+                                           y*gamestate.TILE_SIZE+gamestate.TILE_SIZE//2)
+        
+        self.terrain = terrain.Terrain(self.batch, self.space, self.grid)
+        
+        self.players = [player.Player(self, self.batch, 1, *data['playerstart'])]
         for p in self.players:
             self.actors[p.name] = p
         
         hts = gamestate.TILE_SIZE//2
-        self.camera.max_bounds = (self.terrain.pixelwidth-gamestate.norm_w//2-hts,
-                                  self.terrain.pixelheight-gamestate.norm_h//2-hts,)
+        self.camera.max_bounds = (self.pixelwidth-gamestate.norm_w//2-hts,
+                                  self.pixelheight-gamestate.norm_h//2-hts,)
+    
+    pixelwidth = property(lambda self: self.width*gamestate.TILE_SIZE)
+    pixelheight = property(lambda self: self.height*gamestate.TILE_SIZE)
     
     def resume_motion(self, space, arbiter, *args, **kwargs):
         for s in arbiter.shapes:
