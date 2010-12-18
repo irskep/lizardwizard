@@ -43,7 +43,8 @@ class Scene(object):
         self.paused = False
         
         self.space = pymunk.Space()
-        self.space.set_default_collision_handler(self.handle_collision, None, None, None)
+        self.space._space.elasticIterations = 0
+        self.space.set_default_collision_handler(None, None, None, self.resume_motion)
         self.pymunk_accum = 0.0
         
         self.init_clock()
@@ -55,12 +56,10 @@ class Scene(object):
     
     def enter(self):
         for p in self.players:
-            print p
             gamestate.main_window.push_handlers(p)
     
     def exit(self):
         for p in self.players:
-            print 'pop'
             gamestate.main_window.pop_handlers()
     
     def remove(self, act):
@@ -69,7 +68,7 @@ class Scene(object):
     
     def load(self):
         dict_repr = util.load_yaml('levels', self.name)
-        self.terrain = terrain.Terrain(self.batch, dict_repr['terrain'])
+        self.terrain = terrain.Terrain(self.batch, self.space, dict_repr['terrain'])
         self.players = [player.Player(self, self.batch, 1, 640, 340)]
         for p in self.players:
             self.actors[p.name] = p
@@ -78,9 +77,13 @@ class Scene(object):
         self.camera.max_bounds = (self.terrain.pixelwidth-gamestate.norm_w//2-hts,
                                   self.terrain.pixelheight-gamestate.norm_h//2-hts,)
     
-    def handle_collision(self, space, arbiter, *args, **kwargs):
+    def resume_motion(self, space, arbiter, *args, **kwargs):
         for s in arbiter.shapes:
-            self.remove(s.parent)
+            try:
+                p = s.parent
+                p.reset_motion()
+            except AttributeError:
+                pass
         return True
     
     # Update/draw

@@ -39,20 +39,26 @@ class Player(actor.Actor):
             return pyglet.event.EVENT_HANDLED
     
     def zero_x(self):
-        self.vx = 0
+        self.body.velocity[0] = 0
+        self.move_x = 0
     
     def zero_y(self):
-        self.vy = 0
+        self.body.velocity[1] = 0
+        self.move_y = 0
     
     def move_left(self):
-        self.vx = -gamestate.MOVE_SPEED
+        self.body.velocity[0] = -gamestate.MOVE_SPEED
+        self.move_x = -1
     
     def move_right(self):
-        self.vx = gamestate.MOVE_SPEED
+        self.body.velocity[0] = gamestate.MOVE_SPEED
+        self.move_x = 1
     
     def move_up(self):
-        self.vy = gamestate.MOVE_SPEED
+        self.body.velocity[1] = gamestate.MOVE_SPEED
+        self.move_y = 1
     
     def move_down(self):
-        self.vy = -gamestate.MOVE_SPEED
+        self.body.velocity[1] = -gamestate.MOVE_SPEED
+        self.move_y = -1
     

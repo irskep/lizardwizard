@@ -1,14 +1,21 @@
 import noise
 import pyglet
 import itertools
+import pymunk
 
 import gamestate
 
 class Terrain(object):
-    def __init__(self, batch, dict_repr):
+    def __init__(self, batch, space, dict_repr):
         super(Terrain, self).__init__()
         self.batch = batch
+        self.space = space
         self.dict_repr = dict_repr
+        
+        self.body = pymunk.Body(pymunk.inf, pymunk.inf)
+        
+        self.vls = set()
+        self.objs = set()
         
         octaves = 1
         
@@ -95,16 +102,20 @@ class Terrain(object):
         n = len(lines)*2
         c = (1.0, 1.0, 1.0, 1.0)
         coords = list(itertools.chain(*lines))
-        self.batch.add(n, pyglet.gl.GL_LINES, None,
-                       ('v2f/static', coords), 
-                       ('c4f/static', c*n))
+        vl = self.batch.add(n, pyglet.gl.GL_LINES, None,
+                            ('v2f/static', coords), 
+                            ('c4f/static', c*n))
+        self.vls.add(vl)
         nt = len(triangles)*3
         ct = (0.81, 0.357, 0.255, 1.0)
         coordst = list(itertools.chain(*triangles))
-        self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
-                       ('v2f/static', coordst), 
-                       ('c4f/static', ct*nt))
+        vlt = self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
+                             ('v2f/static', coordst), 
+                             ('c4f/static', ct*nt))
+        self.vls.add(vlt)
         self.instantiate_quads()
+        
+        self.instantiate_physics(lines)
     
     def instantiate_quads(self):
         triangles = []
@@ -143,9 +154,16 @@ class Terrain(object):
                 row_ix += 1
         nt = len(triangles)/2
         ct = (0.81, 0.357, 0.255, 1.0)
-        self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
-                       ('v2f/static', triangles), 
-                       ('c4f/static', ct*nt))
+        vlt = self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
+                             ('v2f/static', triangles), 
+                             ('c4f/static', ct*nt))
+        self.vls.add(vlt)
+    
+    def instantiate_physics(self, lines):
+        for x1, y1, x2, y2 in lines:
+            l = pymunk.Segment(self.body, (x1, y1), (x2, y2), 1.0)
+            self.space.add(l)
+            self.objs.add(l)
     
     def wall(self, x, y):
         in_bounds = (0 < x < self.width-1) and (0 < y < self.height-1)
