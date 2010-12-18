@@ -7,9 +7,11 @@ import pymunk
 import itertools
 
 import actor
+import camera
 import gamestate
 import player
 import scenehandler
+import terrain
 import util
 
 from util import pushmatrix, draw, interpolator
@@ -32,6 +34,7 @@ class Scene(object):
         self.batch = pyglet.graphics.Batch()
         self.actors = {}
         self.players = []
+        self.camera = camera.Camera()
         
         self.game_time = 0.0
         self.accum_time = 0.0
@@ -51,10 +54,12 @@ class Scene(object):
     
     def enter(self):
         for p in self.players:
+            print p
             gamestate.main_window.push_handlers(p)
     
     def exit(self):
         for p in self.players:
+            print 'pop'
             gamestate.main_window.pop_handlers()
     
     def remove(self, act):
@@ -63,7 +68,10 @@ class Scene(object):
     
     def load(self):
         dict_repr = util.load_yaml('levels', self.name)
-        # IT'S A TOTAL MYSTERY WHAT THE LEVELS WILL BE! HOW EXCITING!!!
+        self.terrain = terrain.Terrain(self.batch, dict_repr['terrain'])
+        self.players = [player.Player(self, self.batch, 1, 640, 340)]
+        for p in self.players:
+            self.actors[p.name] = p
     
     def handle_collision(self, space, arbiter, *args, **kwargs):
         for s in arbiter.shapes:
@@ -90,15 +98,15 @@ class Scene(object):
         # Also update the actors
         for act in self.actors.itervalues():
             act.update(dt)
-            if abs(act.x-self.player.actor.x) > gamestate.norm_w*2 \
-            or abs(act.y-self.player.actor.y) > gamestate.norm_h*2:
-                to_delete.add(act)
         
         for act in to_delete:
             self.remove(act)
+        
+        self.camera.position = self.players[0].position
     
     def draw(self, dt=0):
-        self.batch.draw()
+        with camera.apply_camera(self.camera):
+            self.batch.draw()
     
     
     # Clock

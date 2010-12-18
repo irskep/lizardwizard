@@ -10,6 +10,7 @@ import pymunk
 
 from pymunk._chipmunk import _cpvlerp as lerp
 
+import gamestate
 import util
 
 def id_generator():
@@ -26,33 +27,30 @@ RAD_TO_DEG = 360.0/math.pi*2
 class Actor(object):
     def __init__(self, scn=None, batch=None, kind="unknown", x=0, y=0, name=None):
         super(Actor, self).__init__()
-        self.atl = above_the_law #..s of physics
         self.scene = scn
         self.batch = batch
+        self.kind = kind
         self.interp = util.interpolator.InterpolatorController()
+        self.vx, self.vy = 0.0, 0.0
         
         if name is None:
             name = next_actor_id.next()
         self.name = name
         
         if self.scene:
-            mass = 100
-            circle_radius = 10
-            moment = pymunk.moment_for_circle(mass, 0, circle_radius)
-            collision_group = ENEMY
-            self.body = pymunk.Body(mass, moment)
+            self.body = pymunk.Body(pymunk.inf, pymunk.inf)
             self.body.position = (x, y)
-            self.body.angle = r*DEG_TO_RAD
-            self.shape = pymunk.Circle(self.body, circle_radius)
+            # self.body.angle = r*DEG_TO_RAD
+            self.shape = pymunk.Circle(self.body, gamestate.TILE_SIZE/2)
             self.shape.parent = self
-            self.shape.group = collision_group
-            self.scene.space.add(self.body, self.shape)
+            self.scene.space.add(self.shape)
         else:
             self.shape = None
             self.body = None
     
     def update(self, dt):
-        pass
+        self.body.position[0] += self.vx*dt
+        self.body.position[1] += self.vy*dt
     
     def delete(self):
         if self.shape:
@@ -79,4 +77,4 @@ class Actor(object):
     position = property(lambda self: self.body.position, _set_position)
     x = property(lambda self: self.body.position[0], _set_x)
     y = property(lambda self: self.body.position[1], _set_y)
-    r = property(lambda self: self.group.r, _set_r)
+    r = property(lambda self: self.body.angle*RAD_TO_DEG, _set_r)

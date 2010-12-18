@@ -19,6 +19,7 @@ except ImportError:
 import os
 import shutil
 import sys
+import functools
 
 import pyglet
 import pymunk
@@ -59,6 +60,14 @@ class GameWindow(pyglet.window.Window):
         
         self.scene_handler = scenehandler.SceneHandler(first_level)
         
+        pyglet.gl.glClearColor(0.81, 0.357, 0.255, 1.0)
+        self.title_image = pyglet.resource.image('game/images/title1.png')
+        w, h = self.title_image.width, self.title_image.height
+        self.scene_draw = functools.partial(self.title_image.blit, 
+                                            self.width/2-w/2, self.height/2-h/2)
+        # Load resources or something
+        self.finish_title()
+        
         self.fps_display = pyglet.clock.ClockDisplay()
         
         # Schedule drawing and update functions.
@@ -66,9 +75,13 @@ class GameWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.on_draw, 1/72.0)
         pyglet.clock.schedule_interval(self.scene_handler.update, 1/72.0)
     
+    def finish_title(self):
+        self.scene_draw = self.scene_handler.draw
+        pyglet.gl.glClearColor(0, 0, 0, 1.0)
+    
     def on_draw(self, dt=0):
         self.clear()
-        self.scene_handler.draw()
+        self.scene_draw()
         self.fps_display.draw()
     
     def on_key_press(self, symbol, modifiers):

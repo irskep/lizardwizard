@@ -3,25 +3,27 @@ import pyglet
 import pymunk
 
 import actor
+import gamestate
 
 from util import settings
 
-class Player(object):
-    def __init__(self, scn, number, x=640, y=25):
-        super(Player, self).__init__()
-        self.scene = scn
+class Player(actor.Actor):
+    def __init__(self, scn, batch, number, x=640, y=25):
+        super(Player, self).__init__(scn, batch, kind='player', x=x, y=y)
         self.number = number
-        self.actor = actor.Actor(self.scene, self.scene.batch, kind='player', x=0, y=0)
         
         controls_map = settings.controls_map[self.number]
         self.press_controls = {
-            controls_map[settings.RIGHT]: None,
-            controls_map[settings.LEFT]: None,
-            controls_map[settings.FIRE]: None,
+            controls_map[settings.RIGHT]: self.move_right,
+            controls_map[settings.LEFT]: self.move_left,
+            controls_map[settings.UP]: self.move_up,
+            controls_map[settings.DOWN]: self.move_down,
         }
         self.release_controls = {
-            controls_map[settings.RIGHT]: None,
-            controls_map[settings.LEFT]: None
+            controls_map[settings.RIGHT]: self.zero_x,
+            controls_map[settings.LEFT]: self.zero_x,
+            controls_map[settings.UP]: self.zero_y,
+            controls_map[settings.DOWN]: self.zero_y,
         }
     
     def on_key_press(self, symbol, modifiers):
@@ -35,4 +37,22 @@ class Player(object):
         if f:
             f()
             return pyglet.event.EVENT_HANDLED
+    
+    def zero_x(self):
+        self.vx = 0
+    
+    def zero_y(self):
+        self.vy = 0
+    
+    def move_left(self):
+        self.vx = -gamestate.MOVE_SPEED
+    
+    def move_right(self):
+        self.vx = gamestate.MOVE_SPEED
+    
+    def move_up(self):
+        self.vy = gamestate.MOVE_SPEED
+    
+    def move_down(self):
+        self.vy = -gamestate.MOVE_SPEED
     
