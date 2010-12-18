@@ -74,7 +74,6 @@ class GameWindow(pyglet.window.Window):
         self.scene_draw_queue = []
         self.scene_draw = self.scene_handler.draw
         
-        
         self.fps_display = pyglet.clock.ClockDisplay()
         
         # Schedule drawing and update functions.

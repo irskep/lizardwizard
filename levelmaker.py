@@ -3,7 +3,7 @@ import noise
 
 octaves = 1
 
-x_off, y_off = 18433, 2595
+x_off, y_off = 183, 25
 
 
 freq=1024
