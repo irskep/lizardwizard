@@ -43,11 +43,11 @@ class Terrain(object):
     
     def instantiate_lines(self):
         lines = []
+        triangles = []
         t = self.dict_repr['threshold']
         ts = gamestate.TILE_SIZE
-        def wall(x, y):
-            in_bounds = (0 < x < self.width-1) and (0 < y < self.height-1)
-            return (in_bounds and self.grid[x][y] < t) or not in_bounds
+        hts = ts//2
+        wall = self.wall
         
         for row_ix in range(1, self.height-1):
             for col_ix in range(1, self.width-1):
@@ -61,35 +61,95 @@ class Terrain(object):
                     urd = (u and r and d)
                     rdl = (r and d and l)
                     if (l and not (u or d)) or dlu or lur or rdl:
-                        lines.append((col_ix*ts-ts//2, row_ix*ts-ts//2, 
-                                      col_ix*ts-ts//2, row_ix*ts+ts//2))
+                        lines.append((col_ix*ts-hts, row_ix*ts-hts, 
+                                      col_ix*ts-hts, row_ix*ts+hts))
                     if (r and not (u or d)) or lur or urd or rdl:
-                        lines.append((col_ix*ts+ts//2, row_ix*ts-ts//2, 
-                                      col_ix*ts+ts//2, row_ix*ts+ts//2))
+                        lines.append((col_ix*ts+hts, row_ix*ts-hts, 
+                                      col_ix*ts+hts, row_ix*ts+hts))
                     if (d and not (l or r)) or dlu or urd or rdl:
-                        lines.append((col_ix*ts-ts//2, row_ix*ts-ts//2, 
-                                      col_ix*ts+ts//2, row_ix*ts-ts//2))
+                        lines.append((col_ix*ts-hts, row_ix*ts-hts, 
+                                      col_ix*ts+hts, row_ix*ts-hts))
                     if (u and not (l or r)) or dlu or lur or urd:
-                        lines.append((col_ix*ts-ts//2, row_ix*ts+ts//2, 
-                                      col_ix*ts+ts//2, row_ix*ts+ts//2))
+                        lines.append((col_ix*ts-hts, row_ix*ts+hts, 
+                                      col_ix*ts+hts, row_ix*ts+hts))
                     if l and u and not dlu and not lur:
-                        lines.append((col_ix*ts-ts//2, row_ix*ts-ts//2, 
-                                      col_ix*ts+ts//2, row_ix*ts+ts//2))
+                        p = (col_ix*ts-hts, row_ix*ts-hts, 
+                             col_ix*ts+hts, row_ix*ts+hts)
+                        lines.append(p)
+                        triangles.append(p + (col_ix*ts-hts, row_ix*ts+hts))
                     if l and d and not dlu and not rdl:
-                        lines.append((col_ix*ts+ts//2, row_ix*ts-ts//2, 
-                                      col_ix*ts-ts//2, row_ix*ts+ts//2))
+                        p = (col_ix*ts+hts, row_ix*ts-hts, 
+                             col_ix*ts-hts, row_ix*ts+hts)
+                        lines.append(p)
+                        triangles.append(p + (col_ix*ts-hts, row_ix*ts-hts))
                     if r and u and not lur and not urd:
-                        lines.append((col_ix*ts+ts//2, row_ix*ts-ts//2, 
-                                      col_ix*ts-ts//2, row_ix*ts+ts//2))
+                        p = (col_ix*ts+hts, row_ix*ts-hts, 
+                             col_ix*ts-hts, row_ix*ts+hts)
+                        lines.append(p)
+                        triangles.append(p + (col_ix*ts+hts, row_ix*ts+hts))
                     if r and d and not urd and not rdl:
-                        lines.append((col_ix*ts-ts//2, row_ix*ts-ts//2, 
-                                      col_ix*ts+ts//2, row_ix*ts+ts//2))
+                        p = (col_ix*ts-hts, row_ix*ts-hts, 
+                             col_ix*ts+hts, row_ix*ts+hts)
+                        lines.append(p)
+                        triangles.append(p + (col_ix*ts+hts, row_ix*ts-hts))
         n = len(lines)*2
-        c = (0.81, 0.357, 0.255, 1.0)
+        c = (1.0, 1.0, 1.0, 1.0)
         coords = list(itertools.chain(*lines))
         self.batch.add(n, pyglet.gl.GL_LINES, None,
                        ('v2f/static', coords), 
                        ('c4f/static', c*n))
+        nt = len(triangles)*3
+        ct = (0.81, 0.357, 0.255, 1.0)
+        coordst = list(itertools.chain(*triangles))
+        self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
+                       ('v2f/static', coordst), 
+                       ('c4f/static', ct*nt))
+        self.instantiate_quads()
+    
+    def instantiate_quads(self):
+        triangles = []
+        ts = gamestate.TILE_SIZE
+        hts = ts//2
+        wall = self.wall
+        for col_ix in xrange(0, self.width):
+            row_ix = 0
+            box_start = 0
+            box_end = -1
+            while row_ix < self.height:
+                if wall(col_ix, row_ix):
+                    if box_end == -1:
+                        box_start = row_ix
+                    box_end = row_ix
+                else:
+                    if box_end >= 0:
+                        triangles.extend((
+                            col_ix*ts-hts, box_start*ts-hts,
+                            col_ix*ts+hts, box_start*ts-hts,
+                            col_ix*ts+hts, box_end*ts+hts,
+                            col_ix*ts-hts, box_end*ts+hts,
+                            col_ix*ts+hts, box_end*ts+hts,
+                            col_ix*ts-hts, box_start*ts-hts,
+                        ))
+                        box_end = -1
+                if box_end >= 0:
+                    triangles.extend((
+                        col_ix*ts-hts, box_start*ts-hts,
+                        col_ix*ts+hts, box_start*ts-hts,
+                        col_ix*ts+hts, box_end*ts+hts,
+                        col_ix*ts-hts, box_end*ts+hts,
+                        col_ix*ts+hts, box_end*ts+hts,
+                        col_ix*ts-hts, box_start*ts-hts,
+                    ))
+                row_ix += 1
+        nt = len(triangles)/2
+        ct = (0.81, 0.357, 0.255, 1.0)
+        self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
+                       ('v2f/static', triangles), 
+                       ('c4f/static', ct*nt))
+    
+    def wall(self, x, y):
+        in_bounds = (0 < x < self.width-1) and (0 < y < self.height-1)
+        return (in_bounds and self.grid[x][y] < self.dict_repr['threshold']) or not in_bounds
         
     
     width = property(lambda self: self.dict_repr['size'][0])
