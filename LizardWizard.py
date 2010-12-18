@@ -77,7 +77,9 @@ class GameWindow(pyglet.window.Window):
     
     def finish_title(self):
         self.scene_draw = self.scene_handler.draw
-        pyglet.gl.glClearColor(0, 0, 0, 1.0)
+        # pyglet.gl.glClearColor(0, 0, 0, 1.0)
+        # pyglet.gl.glClearColor(0.2, 0.1, 0.05, 1.0)
+        pyglet.gl.glClearColor(0.5, 0.3, 0.255, 1.0)
     
     def on_draw(self, dt=0):
         self.clear()
