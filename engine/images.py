@@ -11,7 +11,8 @@ walks = {
 }
 
 sits = {
-    'player': pyglet.resource.image('game/images/player_sit.png')
+    'player': pyglet.resource.image('game/images/player_sit.png'),
+    'foot': pyglet.resource.image('game/images/foot.png')
 }
 
 for img in itertools.chain(walks.itervalues(), sits.itervalues()):

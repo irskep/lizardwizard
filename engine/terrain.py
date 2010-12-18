@@ -143,8 +143,3 @@ class Terrain(object):
     
     def wall(self, x, y):
         return self.grid[y][x] == 'X'
-        # in_bounds = (0 < x < self.width-1) and (0 < y < self.height-1)
-        # return (in_bounds and self.grid[x][y] < self.dict_repr['threshold']) or not in_bounds
-    
-    def place(self, x, y):
-        return x*gamestate.TILE_SIZE, y*gamestate.TILE_SIZE

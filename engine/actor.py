@@ -31,7 +31,7 @@ class Actor(object):
         self.kind = kind
         self.interp = util.interpolator.InterpolatorController()
         
-        self.sprite = pyglet.sprite.Sprite(images.sits['player'], batch=batch, x=x, y=y)
+        self.sprite = pyglet.sprite.Sprite(images.sits[self.kind], batch=batch, x=x, y=y)
         
         if name is None:
             name = next_actor_id.next()
@@ -39,6 +39,8 @@ class Actor(object):
         
         self.move_x = 0
         self.move_y = 0
+        
+        self.shapes = []
         
         self.init_physics(x, y)
     
@@ -48,17 +50,20 @@ class Actor(object):
         self.body = pymunk.Body(mass, moment)
         self.body.position = (x, y)
         # self.body.angle = r*DEG_TO_RAD
-        self.shape = pymunk.Circle(self.body, gamestate.TILE_SIZE*0.4)
-        self.shape.parent = self
-        self.scene.space.add(self.body, self.shape)
+        s = pymunk.Circle(self.body, gamestate.TILE_SIZE*0.4)
+        s.parent = self
+        self.shapes.append(s)
+        self.scene.space.add(self.body, *self.shapes)
     
     def update(self, dt):
         self.sprite.position = (self.body.position[0], self.body.position[1])
-        self.sprite.rotation = -math.atan2(self.body.velocity[1], self.body.velocity[0])/math.pi*180.0+90.0
+        if abs(self.body.velocity[0]) + abs(self.body.velocity[1]) > 0:
+            a = math.atan2(self.body.velocity[1], self.body.velocity[0])
+            self.sprite.rotation = -a/math.pi*180.0+90.0
     
     def delete(self):
-        if self.shape:
-            self.scene.space.remove(self.shape)
+        for s in self.shapes:
+            self.scene.space.remove(s)
         if self.body and not self.atl:
             self.scene.space.remove(self.body)
     

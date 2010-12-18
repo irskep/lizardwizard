@@ -76,17 +76,17 @@ class Scene(object):
             self.height = len(self.grid)
         
         data = {}
+        handlers = {
+            'P': self._make_player,
+            'F': self._make_foot
+        }
         for y, row in enumerate(self.grid):
             for x, char in enumerate(row):
-                if char == 'P':
-                    data['playerstart'] = (x*gamestate.TILE_SIZE+gamestate.TILE_SIZE//2,
-                                           y*gamestate.TILE_SIZE+gamestate.TILE_SIZE//2)
+                f = handlers.get(char)
+                if f:
+                    f(x, y)
         
         self.terrain = terrain.Terrain(self.batch, self.space, self.grid)
-        
-        self.players = [player.Player(self, self.batch, 1, *data['playerstart'])]
-        for p in self.players:
-            self.actors[p.name] = p
         
         hts = gamestate.TILE_SIZE//2
         self.camera.max_bounds = (self.pixelwidth-gamestate.norm_w//2-hts,
@@ -94,6 +94,21 @@ class Scene(object):
     
     pixelwidth = property(lambda self: self.width*gamestate.TILE_SIZE)
     pixelheight = property(lambda self: self.height*gamestate.TILE_SIZE)
+    
+    def place(self, x, y):
+        return x*gamestate.TILE_SIZE, y*gamestate.TILE_SIZE
+    
+    def _make_player(self, x, y):
+        i = len(self.players) + 1
+        np = player.Player(self, self.batch, i, *self.place(x, y))
+        self.players.append(np)
+        self.actors[np.name] = np
+    
+    def _make_foot(self, x, y):
+        na = actor.Actor(self, self.batch, 'foot', *self.place(x, y))
+        self.actors[na.name] = na
+    
+    # Physics
     
     def resume_motion(self, space, arbiter, *args, **kwargs):
         for s in arbiter.shapes:

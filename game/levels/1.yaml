@@ -1,7 +1,0 @@
-terrain:
-  position: [18433, 2595]
-  threshold: 90
-  size: [100, 100]
-  fill: [0.5, 0.3, 0.255, 1.0]
-  stroke: [1.0, 1.0, 1.0, 1.0]
-playerstart: [4, 4]
