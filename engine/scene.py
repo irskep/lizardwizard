@@ -130,10 +130,18 @@ class Scene(object):
     def collision_events(self, space, arbiter, *args, **kwargs):
         try:
             tags = [s.parent.kind for s in arbiter.shapes]
-            if 'player' in tags and 'foot' in tags:
-                self.handler.go_to("2")
         except AttributeError:
-            pass
+            return
+        
+        if 'player' in tags and 'foot' in tags and self.events:
+            for p in self.players:
+                p.move_x, p.move_y = 0, 0
+                p.reset_motion()
+                p.stop_moving()
+            f = [x for x in self.actors.itervalues() if x.kind == 'foot'][0]
+            f.delete()
+            del self.actors[f.name]
+            self.handler.go_to("2")
         return True
     
     # Update/draw

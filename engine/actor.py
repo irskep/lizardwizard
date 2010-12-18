@@ -64,8 +64,9 @@ class Actor(object):
     def delete(self):
         for s in self.shapes:
             self.scene.space.remove(s)
-        if self.body and not self.atl:
+        if self.body:
             self.scene.space.remove(self.body)
+        self.sprite.delete()
     
     def reset_motion(self):
         self.body.velocity[0] = gamestate.MOVE_SPEED*self.move_x

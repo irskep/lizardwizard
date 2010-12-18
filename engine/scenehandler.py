@@ -23,6 +23,13 @@ class SceneHandler(actionsequencer.ActionSequencer):
         self.fade_time = 1.0
         self.blackout_alpha = 0.0
         self.batch = pyglet.graphics.Batch()
+        self.batch.add(6, pyglet.gl.GL_TRIANGLES, None,
+                      ('v2f/static', [0, 0, 
+                                      gamestate.norm_w, gamestate.norm_h, 
+                                      0, gamestate.norm_h,
+                                      0, 0,
+                                      gamestate.norm_w, gamestate.norm_h,
+                                      gamestate.norm_w, 0]))
         
         self.set_first_scene(scene.Scene(first_scene, self))
     
@@ -50,11 +57,6 @@ class SceneHandler(actionsequencer.ActionSequencer):
     
     def fade_to(self, next_scene):
         InterpClass = interpolator.LinearInterpolator
-        def fade_out(ending_action=None):
-            self.scene.exit()
-            interp = InterpClass(self, 'blackout_alpha', end=1.0, start=0, duration=self.fade_time,
-                                done_function=self.next_action)
-            self.controller.add_interpolator(interp)
         
         def complete_transition(ending_action=None):
             self.scene.enter()
@@ -69,7 +71,10 @@ class SceneHandler(actionsequencer.ActionSequencer):
                                 done_function=complete_transition)
             self.controller.add_interpolator(interp)
         
-        self.simple_sequence(fade_out, fade_in)
+        self.scene.exit()
+        interp = InterpClass(self, 'blackout_alpha', end=1.0, start=0, duration=self.fade_time,
+                            done_function=fade_in)
+        self.controller.add_interpolator(interp)
     
     def update(self, dt=0):
         self.controller.update_interpolators(dt)
@@ -77,6 +82,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
             scn.update(dt)
     
     def draw(self, dt=0):
+        util.draw.set_color(1, 1, 1, self.blackout_alpha)
         with util.pushmatrix(gamestate.scale):
             for scn in self.scenes:
                 scn.draw()
