@@ -7,7 +7,7 @@ import math
 import functools
 import util
 
-name = 'LUDUM DARE 19 LUDUM DARE 19'
+name = 'Lizard Wizard'
 save_path = pyglet.resource.get_settings_path(name)
 util.mkdir_if_absent(save_path)
 
