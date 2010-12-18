@@ -88,5 +88,5 @@ class SceneHandler(actionsequencer.ActionSequencer):
                 scn.draw()
         if self.blackout_alpha > 0.0:
             util.draw.set_color(0, 0, 0, self.blackout_alpha)
-        self.batch.draw()
+            self.batch.draw()
     

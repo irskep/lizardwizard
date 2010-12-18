@@ -25,10 +25,18 @@ class Player(actor.Actor):
             controls_map[settings.UP]: self.zero_y_up,
             controls_map[settings.DOWN]: self.zero_y_down,
         }
+        
+        self.collision_circles = (
+            (gamestate.TILE_SIZE*0.4, (0, 0)), 
+            (5, (0, 13)), 
+            (3, (0, -21))
+        )
     
     def init_physics(self, x, y):
-        mass = 100
-        moment = pymunk.moment_for_circle(mass, 0, gamestate.TILE_SIZE*0.4)
+        # mass = 100
+        # moment = pymunk.moment_for_circle(mass, 0, gamestate.TILE_SIZE*0.4)
+        inf = 2**32-1
+        mass, moment = inf, inf
         self.body = pymunk.Body(mass, moment)
         self.body.position = (x, y)
         

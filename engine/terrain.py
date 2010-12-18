@@ -22,7 +22,8 @@ class Terrain(object):
         
         self.fill_color = [0.2, 0.1, 0.05, 1.0]
         # self.fill_color = [0.5, 0.3, 0.255, 1.0]
-        self.line_color = [1.0, 1.0, 1.0, 1.0]
+        # self.line_color = [1.0, 1.0, 1.0, 1.0]
+        self.line_color = [0.0, 0.0, 0.0, 1.0]
         
         self.instantiate_lines()
     

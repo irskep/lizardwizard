@@ -131,7 +131,7 @@ class Scene(object):
         try:
             tags = [s.parent.kind for s in arbiter.shapes]
         except AttributeError:
-            return
+            return True
         
         if 'player' in tags and 'foot' in tags and self.events:
             for p in self.players:
@@ -173,6 +173,11 @@ class Scene(object):
     def draw(self, dt=0):
         with camera.apply_camera(self.camera):
             self.batch.draw()
+            # draw.set_color(1,0,0,1)
+            # for p in self.players:
+            #     for size, (offset_x, offset_y) in p.collision_circles:
+            #         draw.circle(p.x+offset_x, p.y+offset_y, size)
+            # draw.set_color(1,1,1,1)
     
     
     # Clock
