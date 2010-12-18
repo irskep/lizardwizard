@@ -32,15 +32,10 @@ class Player(actor.Actor):
         self.body = pymunk.Body(mass, moment)
         self.body.position = (x, y)
         
-        s = pymunk.Circle(self.body, gamestate.TILE_SIZE*0.4)
-        s.parent = self
-        s2 = pymunk.Circle(self.body, 5, (0, 15))
-        s2.parent = self
-        s3 = pymunk.Circle(self.body, 5, (0, -15))
-        s3.parent = self
-        self.shapes.append(s)
-        self.shapes.append(s2)
-        self.shapes.append(s3)
+        for size, offset in ((gamestate.TILE_SIZE*0.4, (0, 0)), (5, (0, 15)), (5, (0, -15))):
+            s = pymunk.Circle(self.body, size, offset)
+            s.parent = self
+            self.shapes.append(s)
         self.scene.space.add(self.body, *self.shapes)
     
     def on_key_press(self, symbol, modifiers):
