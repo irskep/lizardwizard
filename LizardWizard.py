@@ -27,6 +27,7 @@ import pymunk
 pyglet.options['debug_gl'] = False
 
 from engine import gamestate
+from engine import images
 from engine import scenehandler
 from engine import util
 
@@ -63,10 +64,13 @@ class GameWindow(pyglet.window.Window):
         pyglet.gl.glClearColor(0.81, 0.357, 0.255, 1.0)
         self.title_image = pyglet.resource.image('game/images/title1.png')
         w, h = self.title_image.width, self.title_image.height
-        self.scene_draw = functools.partial(self.title_image.blit, 
-                                            self.width/2-w/2, self.height/2-h/2)
+        f = functools.partial(self.title_image.blit, self.width/2-w/2, self.height/2-h/2)
+        self.scene_draw = f
         # Load resources or something
         self.finish_title()
+        
+        self.scene_draw_queue = [functools.partial(images.home.blit, 0, 0),
+                                 self.scene_handler.draw]
         
         self.fps_display = pyglet.clock.ClockDisplay()
         
@@ -76,10 +80,15 @@ class GameWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.scene_handler.update, 1/72.0)
     
     def finish_title(self):
-        self.scene_draw = self.scene_handler.draw
+        # self.scene_draw = self.scene_handler.draw
         # pyglet.gl.glClearColor(0, 0, 0, 1.0)
         # pyglet.gl.glClearColor(0.2, 0.1, 0.05, 1.0)
         pyglet.gl.glClearColor(0.5, 0.3, 0.255, 1.0)
+    
+    def on_mouse_release(self, x, y, button, modifiers):
+        if self.scene_draw_queue:
+            self.scene_draw = self.scene_draw_queue[0]
+            self.scene_draw_queue = self.scene_draw_queue[1:]
     
     def on_draw(self, dt=0):
         self.clear()
