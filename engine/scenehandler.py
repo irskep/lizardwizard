@@ -64,7 +64,6 @@ class SceneHandler(actionsequencer.ActionSequencer):
             # Remove scene
             self.scene.exit()
             new_scene = scene.Scene(next_scene, self)
-            new_scene.transition_from(self.scene.name)
             self.set_scenes(new_scene)
             interp = InterpClass(self, 'blackout_alpha', end=0, start=1.0, duration=self.fade_time,
                                 done_function=complete_transition)

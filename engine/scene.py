@@ -44,7 +44,8 @@ class Scene(object):
         
         self.space = pymunk.Space()
         self.space._space.elasticIterations = 0
-        self.space.set_default_collision_handler(None, None, None, self.resume_motion)
+        self.space.set_default_collision_handler(self.collision_events, None, None,
+                                                 self.enforce_wall_hugging)
         self.pymunk_accum = 0.0
         
         self.init_clock()
@@ -52,19 +53,26 @@ class Scene(object):
         
         self.load()
         
+        self.events = 0
+        
         self.update(0)
     
     def enter(self):
-        for p in self.players:
-            gamestate.main_window.push_handlers(p)
+        if not self.events:
+            self.events += len(self.players)
+            for p in self.players:
+                gamestate.main_window.push_handlers(p)
     
     def exit(self):
-        for p in self.players:
-            gamestate.main_window.pop_handlers()
+        if self.events:
+            self.events -= len(self.players)
+            for p in self.players:
+                gamestate.main_window.pop_handlers()
     
     def remove(self, act):
         act.delete()
         del self.actors[act.name]
+        del self.space
     
     def load(self):
         self.grid = []
@@ -110,13 +118,22 @@ class Scene(object):
     
     # Physics
     
-    def resume_motion(self, space, arbiter, *args, **kwargs):
+    def enforce_wall_hugging(self, space, arbiter, *args, **kwargs):
         for s in arbiter.shapes:
             try:
                 p = s.parent
                 p.reset_motion()
             except AttributeError:
                 pass
+        return True
+    
+    def collision_events(self, space, arbiter, *args, **kwargs):
+        try:
+            tags = [s.parent.kind for s in arbiter.shapes]
+            if 'player' in tags and 'foot' in tags:
+                self.handler.go_to("2")
+        except AttributeError:
+            pass
         return True
     
     # Update/draw
