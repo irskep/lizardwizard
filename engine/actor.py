@@ -8,9 +8,8 @@ import math
 import pyglet
 import pymunk
 
-from pymunk._chipmunk import _cpvlerp as lerp
-
 import gamestate
+import images
 import util
 
 def id_generator():
@@ -32,10 +31,7 @@ class Actor(object):
         self.kind = kind
         self.interp = util.interpolator.InterpolatorController()
         
-        img = pyglet.resource.image('game/images/%s.png' % kind)
-        img.anchor_x = img.width//2
-        img.anchor_y = img.height//2
-        self.sprite = pyglet.sprite.Sprite(img, batch=batch, x=x, y=y)
+        self.sprite = pyglet.sprite.Sprite(images.sits['player'], batch=batch, x=x, y=y)
         
         if name is None:
             name = next_actor_id.next()
@@ -44,21 +40,21 @@ class Actor(object):
         self.move_x = 0
         self.move_y = 0
         
-        if self.scene:
-            mass = 100
-            moment = pymunk.moment_for_circle(mass, 0, gamestate.TILE_SIZE*0.4)
-            self.body = pymunk.Body(mass, moment)
-            self.body.position = (x, y)
-            # self.body.angle = r*DEG_TO_RAD
-            self.shape = pymunk.Circle(self.body, gamestate.TILE_SIZE*0.4)
-            self.shape.parent = self
-            self.scene.space.add(self.body, self.shape)
-        else:
-            self.shape = None
-            self.body = None
+        self.init_physics(x, y)
+    
+    def init_physics(self, x, y):
+        mass = 100
+        moment = pymunk.moment_for_circle(mass, 0, gamestate.TILE_SIZE*0.4)
+        self.body = pymunk.Body(mass, moment)
+        self.body.position = (x, y)
+        # self.body.angle = r*DEG_TO_RAD
+        self.shape = pymunk.Circle(self.body, gamestate.TILE_SIZE*0.4)
+        self.shape.parent = self
+        self.scene.space.add(self.body, self.shape)
     
     def update(self, dt):
         self.sprite.position = (self.body.position[0], self.body.position[1])
+        self.sprite.rotation = -math.atan2(self.body.velocity[1], self.body.velocity[0])/math.pi*180.0+90.0
     
     def delete(self):
         if self.shape:
@@ -69,6 +65,14 @@ class Actor(object):
     def reset_motion(self):
         self.body.velocity[0] = gamestate.MOVE_SPEED*self.move_x
         self.body.velocity[1] = gamestate.MOVE_SPEED*self.move_y
+    
+    def start_moving(self):
+        self.sprite.image = images.walks[self.kind]
+    
+    def stop_moving(self):
+        if self.move_x != 0 or self.move_y != 0:
+            return
+        self.sprite.image = images.sits[self.kind]
     
     def __repr__(self):
         return "Actor(name=%s, kind=%s, x=%0.1f, y=%0.1f, r=%0.1f)" % (

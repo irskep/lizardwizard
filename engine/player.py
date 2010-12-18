@@ -42,35 +42,43 @@ class Player(actor.Actor):
         if self.move_x == 1: return
         self.body.velocity[0] = 0
         self.move_x = 0
+        self.stop_moving()
     
     def zero_x_right(self):
         if self.move_x == -1: return
         self.body.velocity[0] = 0
         self.move_x = 0
+        self.stop_moving()
     
     def zero_y_down(self):
         if self.move_y == 1: return
         self.body.velocity[1] = 0
         self.move_y = 0
+        self.stop_moving()
     
     def zero_y_up(self):
         if self.move_y == -1: return
         self.body.velocity[1] = 0
         self.move_y = 0
+        self.stop_moving()
     
     def move_left(self):
         self.body.velocity[0] = -gamestate.MOVE_SPEED
         self.move_x = -1
+        self.start_moving()
     
     def move_right(self):
         self.body.velocity[0] = gamestate.MOVE_SPEED
         self.move_x = 1
+        self.start_moving()
     
     def move_up(self):
         self.body.velocity[1] = gamestate.MOVE_SPEED
         self.move_y = 1
+        self.start_moving()
     
     def move_down(self):
         self.body.velocity[1] = -gamestate.MOVE_SPEED
         self.move_y = -1
+        self.start_moving()
     
