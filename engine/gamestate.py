@@ -11,7 +11,7 @@ name = 'LUDUM DARE 19 LUDUM DARE 19'
 save_path = pyglet.resource.get_settings_path(name)
 util.mkdir_if_absent(save_path)
 
-TILE_SIZE = 20
+TILE_SIZE = 30
 MOVE_SPEED = 200.0
 
 main_window = None
