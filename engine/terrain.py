@@ -154,3 +154,6 @@ class Terrain(object):
     
     width = property(lambda self: self.dict_repr['size'][0])
     height = property(lambda self: self.dict_repr['size'][1])
+    
+    pixelwidth = property(lambda self: self.dict_repr['size'][0]*gamestate.TILE_SIZE)
+    pixelheight = property(lambda self: self.dict_repr['size'][1]*gamestate.TILE_SIZE)

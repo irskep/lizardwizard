@@ -21,8 +21,7 @@ class Camera(object):
         dict_repr = dict_repr or {}
     
     def _set_position(self, p):
-        # self._x, self._y = self.constrain_point(*p)
-        self._x, self._y = p
+        self._x, self._y = self.constrain_point(*p)
     
     position = property(lambda self: (self._x, self._y), _set_position)
     

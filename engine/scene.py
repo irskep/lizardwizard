@@ -34,7 +34,8 @@ class Scene(object):
         self.batch = pyglet.graphics.Batch()
         self.actors = {}
         self.players = []
-        self.camera = camera.Camera()
+        hts = gamestate.TILE_SIZE//2
+        self.camera = camera.Camera(min_bounds=(gamestate.norm_w//2-hts, gamestate.norm_h//2-hts))
         
         self.game_time = 0.0
         self.accum_time = 0.0
@@ -72,6 +73,10 @@ class Scene(object):
         self.players = [player.Player(self, self.batch, 1, 640, 340)]
         for p in self.players:
             self.actors[p.name] = p
+        
+        hts = gamestate.TILE_SIZE//2
+        self.camera.max_bounds = (self.terrain.pixelwidth-gamestate.norm_w//2-hts,
+                                  self.terrain.pixelheight-gamestate.norm_h//2-hts,)
     
     def handle_collision(self, space, arbiter, *args, **kwargs):
         for s in arbiter.shapes:
