@@ -56,6 +56,8 @@ class Scene(object):
         
         self.events = 0
         
+        self.to_delete = set()
+        
         self.update(0)
     
     def enter(self):
@@ -71,9 +73,7 @@ class Scene(object):
                 gamestate.main_window.pop_handlers()
     
     def remove(self, act):
-        act.delete()
-        del self.actors[act.name]
-        del self.space
+        self.to_delete.add(act)
     
     def load(self):
         self.grid = []
@@ -143,17 +143,22 @@ class Scene(object):
             if hasattr(s, 'parent'):
                 tags.append(s.parent.kind)
         
+        if len(arbiter.shapes) != 2:
+            return True # Give up
         if 'player' in tags and 'foot' in tags and self.events:
             for p in self.players:
                 p.move_x, p.move_y = 0, 0
                 p.reset_motion()
                 p.update_walk_anim()
             f = [x for x in self.actors.itervalues() if x.kind == 'foot'][0]
-            f.delete()
-            del self.actors[f.name]
+            self.remove(f)
             self.handler.go_to("2")
         elif 'player' in tags and 'fly' in tags:
-            pass
+            a, b = arbiter.shapes
+            if b.parent.kind == 'player':
+                a, b = b, a
+            if not b.parent.caught:
+                a.parent.catch(b.parent)
         elif 'player' in tags and len(arbiter.shapes) == 2 and len(tags) == 1:
             a, b = arbiter.shapes
             if hasattr(b, 'parent'):
@@ -179,14 +184,15 @@ class Scene(object):
         self.update_clock(dt)
         self.interp.update_interpolators(dt)
         
-        to_delete = set()
-        
         # Also update the actors
         for act in self.actors.itervalues():
             act.update(dt)
         
-        for act in to_delete:
-            self.remove(act)
+        for act in self.to_delete:
+            del self.actors[act.name]
+            act.delete()
+        
+        self.to_delete = set()
         
         self.camera.position = self.players[0].position
     

@@ -50,6 +50,7 @@ class Player(actor.Actor):
         self.tongue_progress = 0.0
         self.tongue_shapes = []
         self.tongue_state = TONGUE_IN
+        self.target = None
     
     def delete(self):
         super(Player, self).delete()
@@ -72,7 +73,7 @@ class Player(actor.Actor):
             self.shapes.append(s)
         self.scene.space.add(self.body, *self.shapes)
     
-    def update(self, dt=0):    
+    def update(self, dt=0):
         self.body.angular_velocity = 0
         super(Player, self).update(dt)
         
@@ -135,6 +136,12 @@ class Player(actor.Actor):
     
     # Tongue
     
+    def catch(self, target):
+        self.target = target
+        target.caught = True
+        self.scene.space.remove(target.body)
+        self.tongue_state = TONGUE_ENTERING
+    
     def update_tongue(self, dt):
         if self.tongue_state == TONGUE_EXITING:
             self.tongue_progress += dt
@@ -151,6 +158,8 @@ class Player(actor.Actor):
             p = self.tongue_progress
             self.tongue_body.position = (bx+c*(20+1000*p), by+s*(20+1000*p))
             self.tongue_vl.vertices = self.vertices_for_tongue()
+            if self.target:
+                self.target.body.position = self.tongue_body.position
     
     def tongue_out(self):
         if self.tongue_state == TONGUE_IN:
@@ -195,6 +204,10 @@ class Player(actor.Actor):
             self.tongue_vl.delete()
             self.tongue_state = TONGUE_IN
             self.tongue_progress = 0.0
+            if self.target:
+                # self.target.body = None
+                self.scene.remove(self.target)
+                self.target = None
     
     def vertices_for_tongue(self):
         a = -(self.sprite.rotation-90)*actor.DEG_TO_RAD

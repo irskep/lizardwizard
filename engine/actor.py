@@ -30,6 +30,7 @@ class Actor(object):
         self.batch = batch
         self.kind = kind
         self.interp = util.interpolator.InterpolatorController()
+        self.caught = False
         
         self.sprite = pyglet.sprite.Sprite(images.sits[self.kind], batch=batch, 
                                            group=pyglet.graphics.OrderedGroup(0),
@@ -69,7 +70,10 @@ class Actor(object):
         for s in self.shapes:
             self.scene.space.remove(s)
         if self.body:
-            self.scene.space.remove(self.body)
+            try:
+                self.scene.space.remove(self.body)
+            except KeyError:
+                pass # It's ok, player probably ate me
         self.sprite.delete()
     
     def reset_motion(self):
