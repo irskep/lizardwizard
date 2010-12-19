@@ -17,13 +17,13 @@ def random_articles(n=1):
     return [i['id'] for i in json.load(req(random_url % n))['query']['random']]
 
 def infos_for(pageids):
-    j = json.load(req(info_url % '|'.join(str(i) for i in pageids)))['query']['pages'].values()
+    j = json.load(req(info_url % '|'.join(str(i) for i in pageids)))['query']['pages'].itervalues()
     
     return dict[(i['title'], i['fullurl'] + "?action=raw") for i in j]
 
 def text_for(infos):
     texts = {}
-    for title in infos.keys():
+    for title in infos.iterkeys():
         texts[title] = req(url).read()
     return texts
 
@@ -65,7 +65,7 @@ def sanitize(t):
 
 def random_texts(n=1):
     infos = infos_for(random_articles(n))):
-    for title in infos.keys():
+    for title in infos.iterkeys():
         infos[title] = sanitize(infos[title])
 
 # def worker():

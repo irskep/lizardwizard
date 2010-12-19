@@ -141,6 +141,7 @@ class Player(actor.Actor):
         target.caught = True
         self.scene.space.remove(target.body)
         self.tongue_state = TONGUE_ENTERING
+        print 'caught', target.piece
     
     def update_tongue(self, dt):
         if self.tongue_state == TONGUE_EXITING:

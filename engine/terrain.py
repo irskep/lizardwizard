@@ -2,6 +2,7 @@ import noise
 import pyglet
 import itertools
 import pymunk
+import random
 
 import gamestate
 
@@ -27,6 +28,12 @@ class Terrain(object):
         self.line_color = [0.0, 0.0, 0.0, 1.0]
         
         self.instantiate_lines()
+    
+    def random_clear_cell(self):
+        x, y = random.randint(0, self.width), random.randint(0, self.height)
+        while self.wall(x, y):
+            x, y = random.randint(0, self.width), random.randint(0, self.height)
+        return x, y
     
     def instantiate_lines(self):
         lines = []

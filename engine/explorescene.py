@@ -26,8 +26,17 @@ class ExploreScene(scene.Scene):
     
     # Initialization
     
-    def __init__(self, name, scene_handler=None, texts=None):
+    def __init__(self, name, scene_handler, texts):
         super(ExploreScene, self).__init__(name, scene_handler)
+        self.texts = texts
+        self.text_completions = {}
+        self.pieces = []
+        for t in self.texts.iterkeys():
+            self.text_completions[t] = []
+            for i, p in enumerate(t.split('\n\n')):
+                self.pieces.append((t, i, self.texts[p]))
+                self.text_completions[t].append(0)
+        
         self.players = []
         hts = gamestate.TILE_SIZE//2
         self.camera.min_bounds = (gamestate.norm_w//2-hts, gamestate.norm_h//2-hts)
@@ -69,7 +78,6 @@ class ExploreScene(scene.Scene):
         handlers = {
             'P': self._make_player,
             'F': self._make_foot,
-            'Y': self._make_fly,
         }
         for y, row in enumerate(self.grid):
             for x, char in enumerate(row):
@@ -78,6 +86,10 @@ class ExploreScene(scene.Scene):
                     f(x, y)
         
         self.terrain = terrain.Terrain(self.batch, self.space, self.grid)
+        
+        for p in self.pieces:
+            x, y = self.terrain.random_clear_cell()
+            self._make_fly(x, y, p)
         
         hts = gamestate.TILE_SIZE//2
         self.camera.max_bounds = (self.pixelwidth-gamestate.norm_w//2-hts,
@@ -99,8 +111,9 @@ class ExploreScene(scene.Scene):
         na = actor.Actor(self, self.batch, 'foot', *self.place(x, y))
         self.actors[na.name] = na
     
-    def _make_fly(self, x, y):
-        na = fly.Fly(self, self.batch, *self.place(x, y))
+    def _make_fly(self, x, y, piece):
+        xx, yy = self.place(x, y)
+        na = fly.Fly(self, self.batch, xx, yy, piece)
         self.actors[na.name] = na
     
     def local_to_world(self, x, y):

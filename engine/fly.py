@@ -8,8 +8,9 @@ import actor
 import gamestate
 
 class Fly(actor.Actor):
-    def __init__(self, scn, batch, x, y):
+    def __init__(self, scn, batch, x, y, piece):
         super(Fly, self).__init__(scn, batch, kind='fly', x=x, y=y)
+        self.piece = piece
         self.angle_target = random.random()*math.pi*2.0
         self.body.angle = random.random()*math.pi*2.0
         pyglet.clock.schedule_once(self.change_angular_velocity, 0.8+random.random())
