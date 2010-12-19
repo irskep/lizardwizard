@@ -157,7 +157,7 @@ class Scene(object):
             a, b = arbiter.shapes
             if b.parent.kind == 'player':
                 a, b = b, a
-            if not b.parent.caught:
+            if a.parent.tongue_state != player.TONGUE_IN and not a.parent.target and not b.parent.caught:
                 a.parent.catch(b.parent)
         elif 'player' in tags and len(arbiter.shapes) == 2 and len(tags) == 1:
             a, b = arbiter.shapes
