@@ -21,19 +21,21 @@ class Player(actor.Actor):
         super(Player, self).__init__(scn, batch, kind='player', x=x, y=y)
         self.number = number
         
+        self.keys = pyglet.window.key.KeyStateHandler()
+        gamestate.main_window.push_handlers(self.keys)
+        
         controls_map = settings.controls_map[self.number]
+        self.k = {
+            settings.LEFT: controls_map[settings.LEFT],
+            settings.RIGHT: controls_map[settings.RIGHT],
+            settings.UP: controls_map[settings.UP],
+            settings.DOWN: controls_map[settings.DOWN],
+            settings.TONGUE: controls_map[settings.TONGUE],
+        }
         self.press_controls = {
-            controls_map[settings.RIGHT]: self.move_right,
-            controls_map[settings.LEFT]: self.move_left,
-            controls_map[settings.UP]: self.move_up,
-            controls_map[settings.DOWN]: self.move_down,
             controls_map[settings.TONGUE]: self.tongue_out,
         }
         self.release_controls = {
-            controls_map[settings.RIGHT]: self.zero_x_right,
-            controls_map[settings.LEFT]: self.zero_x_left,
-            controls_map[settings.UP]: self.zero_y_up,
-            controls_map[settings.DOWN]: self.zero_y_down,
             controls_map[settings.TONGUE]: self.tongue_in,
         }
         
@@ -54,6 +56,7 @@ class Player(actor.Actor):
     def delete(self):
         super(Player, self).delete()
         self.delete_tongue()
+        gamestate.main_window.pop_handlers()
     
     def init_physics(self, x, y):
         # mass = 100
@@ -73,27 +76,39 @@ class Player(actor.Actor):
     
     def update(self, dt=0):
         super(Player, self).update(dt)
-        if self.tongue_state == TONGUE_EXITING:
-            self.tongue_progress += dt
-        if self.tongue_progress > .3:
-            self.tongue_state = TONGUE_ENTERING
-        if self.tongue_state == TONGUE_ENTERING:
-            self.tongue_progress -= dt
-            if self.tongue_progress <= 0.0:
-                self.delete_tongue()
-        if self.tongue_progress:
-            a = -(self.sprite.rotation-90)*actor.DEG_TO_RAD
-            c, s = math.cos(a), math.sin(a)
-            bx, by = self.body.position[0], self.body.position[1]
-            p = self.tongue_progress
-            self.tongue_body.position = (bx+c*(20+1000*p), by+s*(20+1000*p))
-            self.tongue_vl.vertices = self.vertices_for_tongue()
+        
+        a = math.atan2(self.move_target[1]-self.body.position[1],
+                       self.move_target[0]-self.body.position[0])
+        self.move_x, self.move_y = 0, 0
+        ba = a
+        if self.keys[self.k[settings.LEFT]]:
+            ba += 1.57
+            self.move_x += math.cos(a+1.57)
+            self.move_y += math.sin(a+1.57)
+        elif self.keys[self.k[settings.RIGHT]]:
+            ba -= 1.57
+            self.move_x += math.cos(a-1.57)
+            self.move_y += math.sin(a-1.57)
+        elif self.keys[self.k[settings.UP]]:
+            self.move_x += math.cos(a)
+            self.move_y += math.sin(a)
+        elif self.keys[self.k[settings.DOWN]]:
+            ba += 3.14
+            self.move_x -= math.cos(a)
+            self.move_y -= math.sin(a)
+        self.body.angle = ba
+        self.reset_motion()
+        
+        self.update_tongue(dt)
+    
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.tongue_out()
     
     def on_mouse_motion(self, x, y, dx, dy):
-        self.rotate_to_face(*self.scene.local_to_world(x, y))
+        self.move_target = self.scene.local_to_world(x, y)
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.rotate_to_face(*self.scene.local_to_world(x, y))
+        self.move_target = self.scene.local_to_world(x, y)
     
     def rotate_to_face(self, x, y):
         a = math.atan2(y-self.body.position[1], x-self.body.position[0])
@@ -113,6 +128,26 @@ class Player(actor.Actor):
         if f:
             f()
             return pyglet.event.EVENT_HANDLED
+    
+    
+    # Tongue
+    
+    def update_tongue(self, dt):
+        if self.tongue_state == TONGUE_EXITING:
+            self.tongue_progress += dt
+        if self.tongue_progress > .3:
+            self.tongue_state = TONGUE_ENTERING
+        if self.tongue_state == TONGUE_ENTERING:
+            self.tongue_progress -= dt
+            if self.tongue_progress <= 0.0:
+                self.delete_tongue()
+        if self.tongue_progress:
+            a = -(self.sprite.rotation-90)*actor.DEG_TO_RAD
+            c, s = math.cos(a), math.sin(a)
+            bx, by = self.body.position[0], self.body.position[1]
+            p = self.tongue_progress
+            self.tongue_body.position = (bx+c*(20+1000*p), by+s*(20+1000*p))
+            self.tongue_vl.vertices = self.vertices_for_tongue()
     
     def tongue_out(self):
         if self.tongue_state == TONGUE_IN:
@@ -168,48 +203,4 @@ class Player(actor.Actor):
         x4, y4 = self.tongue_body.position[0] - ox, self.tongue_body.position[1] - oy
         return [x1, y1, x2, y2, x3, y3,
                 x3, y3, x4, y4, x2, y2]
-    
-    def zero_x_left(self):
-        if self.move_x == 1: return
-        self.body.velocity[0] = 0
-        self.move_x = 0
-        self.stop_moving()
-    
-    def zero_x_right(self):
-        if self.move_x == -1: return
-        self.body.velocity[0] = 0
-        self.move_x = 0
-        self.stop_moving()
-    
-    def zero_y_down(self):
-        if self.move_y == 1: return
-        self.body.velocity[1] = 0
-        self.move_y = 0
-        self.stop_moving()
-    
-    def zero_y_up(self):
-        if self.move_y == -1: return
-        self.body.velocity[1] = 0
-        self.move_y = 0
-        self.stop_moving()
-    
-    def move_left(self):
-        self.body.velocity[0] = -gamestate.MOVE_SPEED
-        self.move_x = -1
-        self.start_moving()
-    
-    def move_right(self):
-        self.body.velocity[0] = gamestate.MOVE_SPEED
-        self.move_x = 1
-        self.start_moving()
-    
-    def move_up(self):
-        self.body.velocity[1] = gamestate.MOVE_SPEED
-        self.move_y = 1
-        self.start_moving()
-    
-    def move_down(self):
-        self.body.velocity[1] = -gamestate.MOVE_SPEED
-        self.move_y = -1
-        self.start_moving()
     

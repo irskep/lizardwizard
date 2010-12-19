@@ -10,18 +10,18 @@ LEFT = 3
 TONGUE = 4
 
 controls_map = {
-    1: {
+    2: {
         UP: key.UP,
         RIGHT: key.RIGHT,
         DOWN: key.DOWN,
         LEFT: key.LEFT,
-        TONGUE: key.SPACE,
+        TONGUE: key.RSHIFT,
     },
-    2: {
+    1: {
         UP: key.W,
         RIGHT: key.D,
         DOWN: key.S,
         LEFT: key.A,
-        TONGUE: key.LSHIFT,
+        TONGUE: key.SPACE,
     },
 }
