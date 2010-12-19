@@ -134,6 +134,7 @@ class ExploreScene(scene.Scene):
         self.actors[na.name] = na
     
     def _make_fly(self, x, y, piece):
+        x, y = 3, 3
         xx, yy = self.place(x, y)
         na = fly.Fly(self, self.batch, xx, yy, piece)
         self.actors[na.name] = na

@@ -8,6 +8,7 @@ import sys
 import pyglet
 
 import actionsequencer
+import explorescene
 import gamestate
 import scene
 import util
@@ -23,13 +24,13 @@ class SceneHandler(actionsequencer.ActionSequencer):
         self.fade_time = 1.0
         self.blackout_alpha = 0.0
         self.batch = pyglet.graphics.Batch()
-        self.batch.add(6, pyglet.gl.GL_TRIANGLES, None,
-                      ('v2f/static', [0, 0, 
-                                      gamestate.norm_w, gamestate.norm_h, 
-                                      0, gamestate.norm_h,
-                                      0, 0,
-                                      gamestate.norm_w, gamestate.norm_h,
-                                      gamestate.norm_w, 0]))
+        self.fade_sprite = pyglet.sprite.Sprite(pyglet.resource.image('game/images/fade.png'),
+                                                0, 0, batch=self.batch)
+        self.fade_sprite.opacity = 0.0
+        self.fade_sprite_2 = pyglet.sprite.Sprite(pyglet.resource.image('game/images/fade2.png'), 
+                                                0, 0, batch=self.batch)
+        self.fade_sprite_2.opacity = 0.0
+        self.fs = self.fade_sprite_2
     
     def set_first_scene(self, scn):
         self.set_scenes(scn)
@@ -47,11 +48,21 @@ class SceneHandler(actionsequencer.ActionSequencer):
 
     # Called by a scene to load a new scene.
     # If dir is specified a sliding transition is used
-    def go_to(self, next_scene):
+    def go_to(self, next_scene, immediate=False):
+        if isinstance(next_scene, explorescene.ExploreScene):
+            self.fs = self.fade_sprite
+        else:
+            self.fs = self.fade_sprite_2
+            
         if next_scene is None:
             sys.exit(0)
         else:
-            self.fade_to(next_scene)
+            if immediate:
+                self.scene.exit()
+                self.set_scenes(next_scene)
+                self.scene.enter()
+            else:
+                self.fade_to(next_scene)
     
     def fade_to(self, next_scene):
         InterpClass = interpolator.LinearInterpolator
@@ -79,11 +90,11 @@ class SceneHandler(actionsequencer.ActionSequencer):
             scn.update(dt)
     
     def draw(self, dt=0):
-        util.draw.set_color(1, 1, 1, self.blackout_alpha)
         with util.pushmatrix(gamestate.scale):
             for scn in self.scenes:
                 scn.draw()
         if self.blackout_alpha > 0.0:
-            util.draw.set_color(0, 0, 0, self.blackout_alpha)
+            self.fs.opacity = self.blackout_alpha*255
+            self.fs.set_position(0, 0)
             self.batch.draw()
     

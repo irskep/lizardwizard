@@ -64,7 +64,7 @@ class GameWindow(pyglet.window.Window):
         
         self.scene_handler = scenehandler.SceneHandler()
         fs = explorescene.ExploreScene(first_level, self.scene_handler, 
-                                         {'title 1': 'heyhey', 'title 2': 'hoho'})
+                                         {'title 1': 'heyhey'})#, 'title 2': 'hoho'})
         self.scene_handler.set_first_scene(fs)
         
         pyglet.gl.glClearColor(0.81, 0.357, 0.255, 1.0)
