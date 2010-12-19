@@ -79,7 +79,7 @@ class GameWindow(pyglet.window.Window):
         
         gamestate.dj = pyglet.media.Player()
         gamestate.dj.eos_action = 'loop'
-        gamestate.dj.queue(pyglet.resource.media('game/music.ogg', streaming=True))
+        gamestate.dj.queue(pyglet.resource.media('game/music.wav', streaming=True))
         gamestate.dj.play()
     
     def finish_title(self):
