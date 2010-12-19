@@ -116,6 +116,10 @@ class Scene(object):
         na = actor.Actor(self, self.batch, 'foot', *self.place(x, y))
         self.actors[na.name] = na
     
+    def local_to_world(self, x, y):
+        return ((x+self.camera.x-640)/gamestate.scale_factor,
+                (y+self.camera.y-360)/gamestate.scale_factor)
+    
     # Physics
     
     def enforce_wall_hugging(self, space, arbiter, *args, **kwargs):

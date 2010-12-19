@@ -58,9 +58,9 @@ class Actor(object):
     
     def update(self, dt):
         self.sprite.position = (self.body.position[0], self.body.position[1])
-        if abs(self.body.velocity[0]) + abs(self.body.velocity[1]) > 0:
-            a = math.atan2(self.body.velocity[1], self.body.velocity[0])
-            self.sprite.rotation = -a/math.pi*180.0+90.0
+        self.body.angular_velocity = 0
+        a = self.body.angle
+        self.sprite.rotation = -a/math.pi*180.0+90.0
     
     def delete(self):
         for s in self.shapes:

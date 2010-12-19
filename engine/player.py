@@ -48,6 +48,8 @@ class Player(actor.Actor):
         self.tongue_progress = 0.0
         self.tongue_shapes = []
         self.tongue_state = TONGUE_IN
+        
+        self.move_target = (self.body.position[0], self.body.position[1])
     
     def delete(self):
         super(Player, self).delete()
@@ -73,7 +75,9 @@ class Player(actor.Actor):
         super(Player, self).update(dt)
         if self.tongue_state == TONGUE_EXITING:
             self.tongue_progress += dt
-        elif self.tongue_state == TONGUE_ENTERING:
+        if self.tongue_progress > .3:
+            self.tongue_state = TONGUE_ENTERING
+        if self.tongue_state == TONGUE_ENTERING:
             self.tongue_progress -= dt
             if self.tongue_progress <= 0.0:
                 self.delete_tongue()
@@ -82,8 +86,21 @@ class Player(actor.Actor):
             c, s = math.cos(a), math.sin(a)
             bx, by = self.body.position[0], self.body.position[1]
             p = self.tongue_progress
-            self.tongue_body.position = (bx+c*(20+400*p), by+s*(20+400*p))
+            self.tongue_body.position = (bx+c*(20+1000*p), by+s*(20+1000*p))
             self.tongue_vl.vertices = self.vertices_for_tongue()
+    
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.rotate_to_face(*self.scene.local_to_world(x, y))
+    
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.rotate_to_face(*self.scene.local_to_world(x, y))
+    
+    def rotate_to_face(self, x, y):
+        a = math.atan2(y-self.body.position[1], x-self.body.position[0])
+        self.move_x = math.cos(a)
+        self.move_y = math.sin(a)
+        self.body.angle = a
+        self.reset_motion()
     
     def on_key_press(self, symbol, modifiers):
         f = self.press_controls.get(symbol, None)
