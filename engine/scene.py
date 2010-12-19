@@ -8,6 +8,7 @@ import itertools
 
 import actor
 import camera
+import fly
 import gamestate
 import player
 import scenehandler
@@ -86,7 +87,8 @@ class Scene(object):
         data = {}
         handlers = {
             'P': self._make_player,
-            'F': self._make_foot
+            'F': self._make_foot,
+            'Y': self._make_fly,
         }
         for y, row in enumerate(self.grid):
             for x, char in enumerate(row):
@@ -114,6 +116,10 @@ class Scene(object):
     
     def _make_foot(self, x, y):
         na = actor.Actor(self, self.batch, 'foot', *self.place(x, y))
+        self.actors[na.name] = na
+    
+    def _make_fly(self, x, y):
+        na = fly.Fly(self, self.batch, *self.place(x, y))
         self.actors[na.name] = na
     
     def local_to_world(self, x, y):
@@ -146,7 +152,9 @@ class Scene(object):
             f.delete()
             del self.actors[f.name]
             self.handler.go_to("2")
-        elif 'player' in tags and len(arbiter.shapes) == 2:
+        elif 'player' in tags and 'fly' in tags:
+            pass
+        elif 'player' in tags and len(arbiter.shapes) == 2 and len(tags) == 1:
             a, b = arbiter.shapes
             if hasattr(b, 'parent'):
                 a, b = b, a

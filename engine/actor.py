@@ -31,7 +31,9 @@ class Actor(object):
         self.kind = kind
         self.interp = util.interpolator.InterpolatorController()
         
-        self.sprite = pyglet.sprite.Sprite(images.sits[self.kind], batch=batch, x=x, y=y)
+        self.sprite = pyglet.sprite.Sprite(images.sits[self.kind], batch=batch, 
+                                           group=pyglet.graphics.OrderedGroup(0),
+                                           x=x, y=y)
         
         if name is None:
             name = next_actor_id.next()
@@ -43,6 +45,8 @@ class Actor(object):
         self.shapes = []
         
         self.init_physics(x, y)
+        
+        self.move_target = (self.body.position[0], self.body.position[1])
     
     def init_physics(self, x, y):
         mass = 100
@@ -58,7 +62,6 @@ class Actor(object):
     
     def update(self, dt):
         self.sprite.position = (self.body.position[0], self.body.position[1])
-        self.body.angular_velocity = 0
         a = self.body.angle
         self.sprite.rotation = -a/math.pi*180.0+90.0
     

@@ -50,8 +50,6 @@ class Player(actor.Actor):
         self.tongue_progress = 0.0
         self.tongue_shapes = []
         self.tongue_state = TONGUE_IN
-        
-        self.move_target = (self.body.position[0], self.body.position[1])
     
     def delete(self):
         super(Player, self).delete()
@@ -74,7 +72,8 @@ class Player(actor.Actor):
             self.shapes.append(s)
         self.scene.space.add(self.body, *self.shapes)
     
-    def update(self, dt=0):
+    def update(self, dt=0):    
+        self.body.angular_velocity = 0
         super(Player, self).update(dt)
         
         a = math.atan2(self.move_target[1]-self.body.position[1],
@@ -99,15 +98,6 @@ class Player(actor.Actor):
         
         last_ba = self.body.angle
         
-        # while last_ba > math.pi:
-        #     last_ba -= math.pi*2.0
-        # while last_ba < -math.pi:
-        #     last_ba += math.pi*2.0
-        # while ba > math.pi:
-        #     ba -= math.pi*2.0
-        # while ba < -math.pi:
-        #     ba += math.pi*2.0
-        
         diff = ba - last_ba
         while diff > math.pi:
             diff -= math.pi*2.0
@@ -129,13 +119,6 @@ class Player(actor.Actor):
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.move_target = self.scene.local_to_world(x, y)
-    
-    def rotate_to_face(self, x, y):
-        a = math.atan2(y-self.body.position[1], x-self.body.position[0])
-        self.move_x = math.cos(a)
-        self.move_y = math.sin(a)
-        self.body.angle = a
-        self.reset_motion()
     
     def on_key_press(self, symbol, modifiers):
         f = self.press_controls.get(symbol, None)
@@ -174,7 +157,8 @@ class Player(actor.Actor):
             self.tongue_progress = 0.0
             self.tongue_state = TONGUE_EXITING
             self.init_tongue_physics()
-            self.tongue_vl = self.batch.add(6, pyglet.gl.GL_TRIANGLES, None,
+            self.tongue_vl = self.batch.add(6, pyglet.gl.GL_TRIANGLES, 
+                pyglet.graphics.OrderedGroup(-1),
                 ('v2f/dynamic', self.vertices_for_tongue()),
                 ('c4B/static', [255,0,0,255]*6))
     

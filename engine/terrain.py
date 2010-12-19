@@ -11,6 +11,7 @@ class Terrain(object):
         self.batch = batch
         self.space = space
         self.grid = grid
+        self.group = pyglet.graphics.OrderedGroup(1)
         
         self.body = pymunk.Body(pymunk.inf, pymunk.inf)
         
@@ -80,14 +81,14 @@ class Terrain(object):
         n = len(lines)*2
         c = self.line_color
         coords = list(itertools.chain(*lines))
-        vl = self.batch.add(n, pyglet.gl.GL_LINES, None,
+        vl = self.batch.add(n, pyglet.gl.GL_LINES, self.group,
                             ('v2f/static', coords), 
                             ('c4f/static', c*n))
         self.vls.add(vl)
         nt = len(triangles)*3
         ct = self.fill_color
         coordst = list(itertools.chain(*triangles))
-        vlt = self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
+        vlt = self.batch.add(nt, pyglet.gl.GL_TRIANGLES, self.group,
                              ('v2f/static', coordst), 
                              ('c4f/static', ct*nt))
         self.vls.add(vlt)
@@ -132,7 +133,7 @@ class Terrain(object):
                 row_ix += 1
         nt = len(triangles)/2
         ct = self.fill_color
-        vlt = self.batch.add(nt, pyglet.gl.GL_TRIANGLES, None,
+        vlt = self.batch.add(nt, pyglet.gl.GL_TRIANGLES, self.group,
                              ('v2f/static', triangles), 
                              ('c4f/static', ct*nt))
         self.vls.add(vlt)
