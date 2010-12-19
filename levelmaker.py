@@ -1,9 +1,10 @@
 import sys
 import noise
+import random
 
 octaves = 1
 
-x_off, y_off = 183, 25
+x_off, y_off = random.randint(0,1024), random.randint(0,1024)
 
 
 freq=1024
