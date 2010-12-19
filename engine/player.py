@@ -51,6 +51,7 @@ class Player(actor.Actor):
         self.tongue_shapes = []
         self.tongue_state = TONGUE_IN
         self.target = None
+        self.mouse = (self.body.position[0], self.body.position[1])
     
     def delete(self):
         super(Player, self).delete()
@@ -76,6 +77,8 @@ class Player(actor.Actor):
     def update(self, dt=0):
         self.body.angular_velocity = 0
         super(Player, self).update(dt)
+        
+        self.move_target = self.scene.local_to_world(*self.mouse)
         
         a = math.atan2(self.move_target[1]-self.body.position[1],
                        self.move_target[0]-self.body.position[0])
@@ -116,10 +119,10 @@ class Player(actor.Actor):
         self.tongue_out()
     
     def on_mouse_motion(self, x, y, dx, dy):
-        self.move_target = self.scene.local_to_world(x, y)
+        self.mouse = (x, y)
     
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.move_target = self.scene.local_to_world(x, y)
+        self.mouse = (x, y)
     
     def on_key_press(self, symbol, modifiers):
         f = self.press_controls.get(symbol, None)
