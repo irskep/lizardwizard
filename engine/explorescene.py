@@ -32,6 +32,7 @@ class ExploreScene(scene.Scene):
         self.text_completions = {}
         self.pieces = []
         self.hud_batch = pyglet.graphics.Batch()
+        self.hud_objects = set()
         lx = 10
         for t in self.texts.iterkeys():
             self.text_completions[t] = []
@@ -41,8 +42,21 @@ class ExploreScene(scene.Scene):
             
             l = pyglet.text.Label(t, x=lx, y=gamestate.norm_h-10, 
                                   anchor_x='left', anchor_y='top',
-                                  batch=self.hud_batch, group=pyglet.graphics.OrderedGroup(2))
-            lx += max(l.content_width, 200)+30
+                                  batch=self.hud_batch, group=pyglet.graphics.OrderedGroup(3))
+            w = max(l.content_width, 200)
+            x1, y1 = l.x-5, l.y-l.content_height-5
+            x2, y2 = x1, l.y+5
+            x3, y3 = l.x+w+5, y2
+            x4, y4 = x3, y1
+            [x1, y1, x2, y2, x3, y3,
+                    x2, y2, x3, y3, x4, y4]
+            self.hud_batch.add(8, pyglet.gl.GL_LINES, pyglet.graphics.OrderedGroup(2),
+                               ('v2f/static', (x1, y1, x2, y2, 
+                                               x2, y2, x3, y3, 
+                                               x3, y3, x4, y4,
+                                               x4, y4, x1, y1)),
+                               ('c4B/static', (255,255,255,255)*8))
+            lx += w + 30
         
         self.players = []
         hts = gamestate.TILE_SIZE//2

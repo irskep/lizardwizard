@@ -141,7 +141,8 @@ class Player(actor.Actor):
         target.caught = True
         self.scene.space.remove(target.body)
         self.tongue_state = TONGUE_ENTERING
-        print 'caught', target.piece
+        self.scene.text_completions[target.piece[0]][1] = 1
+        self.scene.update_hud()
     
     def update_tongue(self, dt):
         if self.tongue_state == TONGUE_EXITING:
@@ -220,5 +221,5 @@ class Player(actor.Actor):
         x3, y3 = self.tongue_body.position[0] + ox, self.tongue_body.position[1] + oy
         x4, y4 = self.tongue_body.position[0] - ox, self.tongue_body.position[1] - oy
         return [x1, y1, x2, y2, x3, y3,
-                x3, y3, x4, y4, x2, y2]
+                x2, y2, x3, y3, x4, y4]
     
