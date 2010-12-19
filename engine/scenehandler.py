@@ -31,7 +31,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
                                       gamestate.norm_w, gamestate.norm_h,
                                       gamestate.norm_w, 0]))
         
-        self.set_first_scene(scene.Scene(first_scene, self))
+        self.set_first_scene(first_scene)
     
     def set_first_scene(self, scn):
         self.set_scenes(scn)
@@ -65,8 +65,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
         def fade_in(ending_action=None):
             # Remove scene
             self.scene.exit()
-            new_scene = scene.Scene(next_scene, self)
-            self.set_scenes(new_scene)
+            self.set_scenes(next_scene)
             interp = InterpClass(self, 'blackout_alpha', end=0, start=1.0, duration=self.fade_time,
                                 done_function=complete_transition)
             self.controller.add_interpolator(interp)

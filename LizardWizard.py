@@ -26,6 +26,7 @@ import pymunk
 
 pyglet.options['debug_gl'] = False
 
+from engine import explorescene
 from engine import gamestate
 from engine import images
 from engine import scenehandler
@@ -59,7 +60,9 @@ class GameWindow(pyglet.window.Window):
         gamestate.init_scale()          # Set up scaling transformations to have
                                         #   a consistent window size
         
-        self.scene_handler = scenehandler.SceneHandler(first_level)
+        fs = explorescene.ExploreScene(first_level, self, 
+                                         {'title 1': 'heyhey', 'title 2': 'hoho'})
+        self.scene_handler = scenehandler.SceneHandler(fs)
         
         pyglet.gl.glClearColor(0.81, 0.357, 0.255, 1.0)
         self.title_image = pyglet.resource.image('game/images/title1.png')
