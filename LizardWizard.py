@@ -26,7 +26,7 @@ import pymunk
 
 pyglet.options['debug_gl'] = False
 
-from engine import explorescene
+from engine import imagescene
 from engine import gamestate
 from engine import images
 from engine import scenehandler
@@ -36,7 +36,7 @@ class GameWindow(pyglet.window.Window):
     """
     Basic customizations to Window, plus configuration.
     """
-    def __init__(self, first_level, reset_save=False):
+    def __init__(self):
         if util.settings.fullscreen:
             super(GameWindow,self).__init__(fullscreen=True, vsync=True)
         else:
@@ -49,12 +49,6 @@ class GameWindow(pyglet.window.Window):
         
         pymunk.init_pymunk()
         
-        if reset_save:
-            try:
-                shutil.rmtree(os.path.join(gamestate.save_path, "autosave"))
-            except OSError:
-                pass    # Directory didn't exist but we don't care
-        
         gamestate.main_window = self    # Make main window accessible to others.
                                         #   Necessary for convenient event juggling.
         gamestate.init_scale()          # Set up scaling transformations to have
@@ -63,7 +57,7 @@ class GameWindow(pyglet.window.Window):
         self.push_handlers(gamestate.keys)
         
         self.scene_handler = scenehandler.SceneHandler()
-        fs = explorescene.ExploreScene(first_level, self.scene_handler)
+        fs = imagescene.ImageScene(self.scene_handler)
         self.scene_handler.set_first_scene(fs)
         
         pyglet.gl.glClearColor(0.81, 0.357, 0.255, 1.0)
@@ -74,9 +68,6 @@ class GameWindow(pyglet.window.Window):
         # Load resources or something
         self.finish_title()
         
-        self.scene_draw_queue = [functools.partial(images.home.blit, 0, 0),
-                                 self.scene_handler.draw]
-        self.scene_draw_queue = []
         self.scene_draw = self.scene_handler.draw
         
         self.fps_display = pyglet.clock.ClockDisplay()
@@ -97,11 +88,6 @@ class GameWindow(pyglet.window.Window):
         # pyglet.gl.glClearColor(0.2, 0.1, 0.05, 1.0)
         pyglet.gl.glClearColor(0.5, 0.3, 0.255, 1.0)
     
-    def on_mouse_release(self, x, y, button, modifiers):
-        if self.scene_draw_queue:
-            self.scene_draw = self.scene_draw_queue[0]
-            self.scene_draw_queue = self.scene_draw_queue[1:]
-    
     def on_draw(self, dt=0):
         self.clear()
         self.scene_draw()
@@ -114,10 +100,7 @@ class GameWindow(pyglet.window.Window):
     
 
 def run_game():
-    if len(sys.argv) == 2:
-        main_window = GameWindow(reset_save=True, first_level=int(sys.argv[1]))
-    else:
-        main_window = GameWindow(reset_save=True, first_level=1)
+    GameWindow()
     pyglet.app.run()
 
 if __name__ == '__main__':

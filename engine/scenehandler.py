@@ -73,12 +73,10 @@ class SceneHandler(actionsequencer.ActionSequencer):
         
         def fade_in(ending_action=None):
             # Remove scene
-            self.scene.exit()
             self.set_scenes(next_scene_func())
             interp = InterpClass(self, 'blackout_alpha', end=0, start=1.0, duration=self.fade_time,
                                 done_function=complete_transition)
             self.controller.add_interpolator(interp)
-        
         self.scene.exit()
         interp = InterpClass(self, 'blackout_alpha', end=1.0, start=0, duration=self.fade_time,
                             done_function=fade_in)

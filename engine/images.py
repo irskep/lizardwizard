@@ -1,7 +1,7 @@
 import pyglet
 import itertools
 
-home = pyglet.resource.image('game/images/home.png')
+# home = pyglet.resource.image('game/images/home.png')
 
 walk_sequences = {
     'player': [pyglet.resource.image('game/images/player_walk_%d.png' % f) for f in (1, 2)],
@@ -19,6 +19,8 @@ sits = {
     'foot': pyglet.resource.image('game/images/foot.png'),
     'fly': walks['fly']
 }
+
+comics = [pyglet.resource.image('game/images/comic_%d.png' % i) for i in range(0, 12)]
 
 for img in itertools.chain(walks.itervalues(), sits.itervalues()):
     try:
