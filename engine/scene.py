@@ -141,7 +141,7 @@ class Scene(object):
             for p in self.players:
                 p.move_x, p.move_y = 0, 0
                 p.reset_motion()
-                p.stop_moving()
+                p.update_walk_anim()
             f = [x for x in self.actors.itervalues() if x.kind == 'foot'][0]
             f.delete()
             del self.actors[f.name]

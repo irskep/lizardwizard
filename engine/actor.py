@@ -73,17 +73,17 @@ class Actor(object):
         self.body.velocity[0] = gamestate.MOVE_SPEED*self.move_x
         self.body.velocity[1] = gamestate.MOVE_SPEED*self.move_y
     
-    def start_moving(self):
-        self.sprite.image = images.walks[self.kind]
+    def update_walk_anim(self):
+        if abs(self.move_x) + abs(self.move_y) > 0:
+            if self.sprite.image != images.walks[self.kind]:
+                self.sprite.image = images.walks[self.kind]
+        else:
+            self.sprite.image = images.sits[self.kind]
     
     def estop(self):
         self.move_x, self.move_y = 0
-        self.stop_moving()
-    
-    def stop_moving(self):
-        if self.move_x != 0 or self.move_y != 0:
-            return
-        self.sprite.image = images.sits[self.kind]
+        self.update_walk_anim()
+        
     
     def __repr__(self):
         return "Actor(name=%s, kind=%s, x=%0.1f, y=%0.1f, r=%0.1f)" % (

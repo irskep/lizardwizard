@@ -139,7 +139,7 @@ class Terrain(object):
     
     def instantiate_physics(self, lines):
         for x1, y1, x2, y2 in lines:
-            l = pymunk.Segment(self.body, (x1, y1), (x2, y2), 1.0)
+            l = pymunk.Segment(self.body, (x1, y1), (x2, y2), 3.0)
             l.elasticity = 0.0
             self.space.add(l)
             self.objs.add(l)

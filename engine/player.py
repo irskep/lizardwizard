@@ -96,8 +96,28 @@ class Player(actor.Actor):
             ba += 3.14
             self.move_x -= math.cos(a)
             self.move_y -= math.sin(a)
-        self.body.angle = ba
+        
+        last_ba = self.body.angle
+        
+        # while last_ba > math.pi:
+        #     last_ba -= math.pi*2.0
+        # while last_ba < -math.pi:
+        #     last_ba += math.pi*2.0
+        # while ba > math.pi:
+        #     ba -= math.pi*2.0
+        # while ba < -math.pi:
+        #     ba += math.pi*2.0
+        
+        diff = ba - last_ba
+        while diff > math.pi:
+            diff -= math.pi*2.0
+        while diff < -math.pi:
+            diff += math.pi*2.0
+        while abs(diff) > 0.5:
+            diff /= 2.0
+        self.body.angle = last_ba + diff
         self.reset_motion()
+        self.update_walk_anim()
         
         self.update_tongue(dt)
     
