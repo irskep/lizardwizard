@@ -14,7 +14,7 @@ import util
 from util import interpolator
 
 class SceneHandler(actionsequencer.ActionSequencer):
-    def __init__(self, first_scene):
+    def __init__(self):
         super(SceneHandler, self).__init__()
         self.scene = None   # Main scene
         self.scenes = []    # Scenes to be drawn
@@ -30,8 +30,6 @@ class SceneHandler(actionsequencer.ActionSequencer):
                                       0, 0,
                                       gamestate.norm_w, gamestate.norm_h,
                                       gamestate.norm_w, 0]))
-        
-        self.set_first_scene(first_scene)
     
     def set_first_scene(self, scn):
         self.set_scenes(scn)

@@ -15,6 +15,7 @@ TILE_SIZE = 30
 MOVE_SPEED = 200.0
 
 main_window = None
+keys = None
 norm_w = 1280
 norm_h = 720
 scale_factor = 1.0

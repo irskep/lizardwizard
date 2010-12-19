@@ -36,9 +36,6 @@ class ExploreScene(scene.Scene):
         lx = 10
         for t in self.texts.iterkeys():
             self.text_completions[t] = []
-            for i, p in enumerate(t.split('\n\n')):
-                self.pieces.append((t, i, self.texts[p]))
-                self.text_completions[t].append(0)
             
             l = pyglet.text.Label(t, x=lx, y=gamestate.norm_h-10, 
                                   anchor_x='left', anchor_y='top',
@@ -48,15 +45,19 @@ class ExploreScene(scene.Scene):
             x2, y2 = x1, l.y+5
             x3, y3 = l.x+w+5, y2
             x4, y4 = x3, y1
-            [x1, y1, x2, y2, x3, y3,
-                    x2, y2, x3, y3, x4, y4]
             self.hud_batch.add(8, pyglet.gl.GL_LINES, pyglet.graphics.OrderedGroup(2),
                                ('v2f/static', (x1, y1, x2, y2, 
                                                x2, y2, x3, y3, 
                                                x3, y3, x4, y4,
                                                x4, y4, x1, y1)),
                                ('c4B/static', (255,255,255,255)*8))
+            
+            for i, p in enumerate(t.split('\n\n')):
+                self.pieces.append((t, i, self.texts[p], l))
+                self.text_completions[t].append(0)
             lx += w + 30
+        
+        self.update_hud()
         
         self.players = []
         hts = gamestate.TILE_SIZE//2
@@ -185,6 +186,36 @@ class ExploreScene(scene.Scene):
         return True
     
     # Update/draw
+    
+    def bump(self, piece):
+        self.text_completions[piece[0]][piece[1]] = 1
+        self.update_hud()
+        
+        def all_true(l):
+            for item in l:
+                if not l:
+                    return False
+            return True
+        if all_true(all_true(l) for l in self.text_completions.values()):
+            next = ExploreScene("2", self.handler, self.texts)
+            self.handler.go_to(next)
+    
+    def update_hud(self):
+        for title, i, txt, l in self.pieces:
+            c = self.text_completions[title]
+            if c[i] == 1:
+                w = max(l.content_width, 200)/float(len(c))
+                x = l.x + w*i
+                x1, y1 = x-5, l.y-l.content_height-5
+                x2, y2 = x1, l.y+5
+                x3, y3 = x+w+5, y2
+                x4, y4 = x3, y1
+                self.hud_batch.add(4, pyglet.gl.GL_QUADS, pyglet.graphics.OrderedGroup(2),
+                                   ('v2f/static', (x1, y1, x2, y2, 
+                                                   x3, y3, x4, y4)),
+                                   ('c4B/static', (50,80,128,255)*4))
+                # [x1, y1, x2, y2, x3, y3,
+                #         x2, y2, x3, y3, x4, y4]
     
     def update(self, dt=0):
         if self.paused: 

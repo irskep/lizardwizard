@@ -59,10 +59,13 @@ class GameWindow(pyglet.window.Window):
                                         #   Necessary for convenient event juggling.
         gamestate.init_scale()          # Set up scaling transformations to have
                                         #   a consistent window size
+        gamestate.keys = pyglet.window.key.KeyStateHandler()
+        self.push_handlers(gamestate.keys)
         
-        fs = explorescene.ExploreScene(first_level, self, 
+        self.scene_handler = scenehandler.SceneHandler()
+        fs = explorescene.ExploreScene(first_level, self.scene_handler, 
                                          {'title 1': 'heyhey', 'title 2': 'hoho'})
-        self.scene_handler = scenehandler.SceneHandler(fs)
+        self.scene_handler.set_first_scene(fs)
         
         pyglet.gl.glClearColor(0.81, 0.357, 0.255, 1.0)
         self.title_image = pyglet.resource.image('game/images/title1.png')

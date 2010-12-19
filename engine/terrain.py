@@ -153,5 +153,4 @@ class Terrain(object):
             self.objs.add(l)
     
     def wall(self, x, y):
-        print x, y, self.width, self.height
         return self.grid[y][x] == 'X'

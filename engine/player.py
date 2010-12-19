@@ -21,9 +21,6 @@ class Player(actor.Actor):
         super(Player, self).__init__(scn, batch, kind='player', x=x, y=y)
         self.number = number
         
-        self.keys = pyglet.window.key.KeyStateHandler()
-        gamestate.main_window.push_handlers(self.keys)
-        
         controls_map = settings.controls_map[self.number]
         self.k = {
             settings.LEFT: controls_map[settings.LEFT],
@@ -56,7 +53,6 @@ class Player(actor.Actor):
     def delete(self):
         super(Player, self).delete()
         self.delete_tongue()
-        gamestate.main_window.pop_handlers()
     
     def init_physics(self, x, y):
         # mass = 100
@@ -84,18 +80,18 @@ class Player(actor.Actor):
                        self.move_target[0]-self.body.position[0])
         self.move_x, self.move_y = 0, 0
         ba = a
-        if self.keys[self.k[settings.LEFT]]:
+        if gamestate.keys[self.k[settings.LEFT]]:
             ba += 1.57
             self.move_x += math.cos(a+1.57)
             self.move_y += math.sin(a+1.57)
-        elif self.keys[self.k[settings.RIGHT]]:
+        elif gamestate.keys[self.k[settings.RIGHT]]:
             ba -= 1.57
             self.move_x += math.cos(a-1.57)
             self.move_y += math.sin(a-1.57)
-        elif self.keys[self.k[settings.UP]]:
+        elif gamestate.keys[self.k[settings.UP]]:
             self.move_x += math.cos(a)
             self.move_y += math.sin(a)
-        elif self.keys[self.k[settings.DOWN]]:
+        elif gamestate.keys[self.k[settings.DOWN]]:
             ba += 3.14
             self.move_x -= math.cos(a)
             self.move_y -= math.sin(a)
@@ -144,8 +140,7 @@ class Player(actor.Actor):
         target.caught = True
         self.scene.space.remove(target.body)
         self.tongue_state = TONGUE_ENTERING
-        self.scene.text_completions[target.piece[0]][1] = 1
-        self.scene.update_hud()
+        self.scene.bump(target.piece)
     
     def update_tongue(self, dt):
         if self.tongue_state == TONGUE_EXITING:
