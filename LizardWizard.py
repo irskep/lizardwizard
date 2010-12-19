@@ -63,8 +63,7 @@ class GameWindow(pyglet.window.Window):
         self.push_handlers(gamestate.keys)
         
         self.scene_handler = scenehandler.SceneHandler()
-        fs = explorescene.ExploreScene(first_level, self.scene_handler, 
-                                         {'title 1': 'heyhey'})#, 'title 2': 'hoho'})
+        fs = explorescene.ExploreScene(first_level, self.scene_handler)
         self.scene_handler.set_first_scene(fs)
         
         pyglet.gl.glClearColor(0.81, 0.357, 0.255, 1.0)
@@ -116,9 +115,9 @@ class GameWindow(pyglet.window.Window):
 
 def run_game():
     if len(sys.argv) == 2:
-        main_window = GameWindow(reset_save=True, first_level=sys.argv[1])
+        main_window = GameWindow(reset_save=True, first_level=int(sys.argv[1]))
     else:
-        main_window = GameWindow(reset_save=True, first_level="1")
+        main_window = GameWindow(reset_save=True, first_level=1)
     pyglet.app.run()
 
 if __name__ == '__main__':

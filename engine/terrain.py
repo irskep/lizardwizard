@@ -31,9 +31,12 @@ class Terrain(object):
         x, y = random.randint(0, self.width-1), random.randint(0, self.height-1)
         def full(x, y):
             try:
-                return self.wall(x, y)
+                if not self.wall(x, y) and not self.wall(x-1, y) and not self.wall(x+1, y):
+                    if not self.wall(x, y-1) and not self.wall(x, y+1):
+                        return False
             except:
-                return True
+                pass
+            return True
         while full(x, y):
             x, y = random.randint(0, self.width), random.randint(0, self.height)
         return x, y
@@ -156,4 +159,7 @@ class Terrain(object):
             self.objs.add(l)
     
     def wall(self, x, y):
-        return self.grid[y][x] == 'X'
+        try:
+            return self.grid[y][x] == 'X'
+        except:
+            return True

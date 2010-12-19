@@ -48,23 +48,23 @@ class SceneHandler(actionsequencer.ActionSequencer):
 
     # Called by a scene to load a new scene.
     # If dir is specified a sliding transition is used
-    def go_to(self, next_scene, immediate=False):
-        if isinstance(next_scene, explorescene.ExploreScene):
-            self.fs = self.fade_sprite
-        else:
-            self.fs = self.fade_sprite_2
+    def go_to(self, next_scene_func=None, immediate=False, alt=True):
             
-        if next_scene is None:
+        if next_scene_func is None:
             sys.exit(0)
         else:
             if immediate:
                 self.scene.exit()
-                self.set_scenes(next_scene)
+                self.set_scenes(next_scene_func())
                 self.scene.enter()
             else:
-                self.fade_to(next_scene)
+                if alt:
+                    self.fs = self.fade_sprite
+                else:
+                    self.fs = self.fade_sprite_2
+                self.fade_to(next_scene_func)
     
-    def fade_to(self, next_scene):
+    def fade_to(self, next_scene_func):
         InterpClass = interpolator.LinearInterpolator
         
         def complete_transition(ending_action=None):
@@ -74,7 +74,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
         def fade_in(ending_action=None):
             # Remove scene
             self.scene.exit()
-            self.set_scenes(next_scene)
+            self.set_scenes(next_scene_func())
             interp = InterpClass(self, 'blackout_alpha', end=0, start=1.0, duration=self.fade_time,
                                 done_function=complete_transition)
             self.controller.add_interpolator(interp)

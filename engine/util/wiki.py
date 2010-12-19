@@ -64,10 +64,19 @@ def sanitize(t):
     return t
 
 def random_texts(n=1):
-    texts = text_for(infos_for(random_articles(n)))
-    for title in texts.iterkeys():
-        texts[title] = sanitize(texts[title])
-    return texts
+    errcount = 0
+    while True:
+        try:
+            texts = text_for(infos_for(random_articles(n)))
+            for title in texts.iterkeys():
+                texts[title] = sanitize(texts[title])
+            return texts
+        except urllib2.HTTPError:
+            print 'wikipedia hates you'
+            errcount += 1
+            if errcount > 2:
+                import sys
+                sys.exit(1)
 
 # def worker():
 #     while True:

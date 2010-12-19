@@ -112,6 +112,8 @@ class Player(actor.Actor):
         self.update_tongue(dt)
     
     def on_mouse_press(self, x, y, button, modifiers):
+        for a in self.scene.actors.values():
+            print a.position
         self.tongue_out()
     
     def on_mouse_motion(self, x, y, dx, dy):

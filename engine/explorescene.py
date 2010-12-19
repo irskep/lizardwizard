@@ -7,6 +7,7 @@ import pyglet
 import pyglet
 import pymunk
 import itertools
+import functools
 
 import actor
 import camera
@@ -20,20 +21,37 @@ import util
 
 from util import pushmatrix, draw, interpolator
 
+NUM_LEVELS = 2
+
 pymunk_update_t = 1/120.0
 
 class ExploreScene(scene.Scene):
     
     # Initialization
     
-    def __init__(self, name, scene_handler, texts):
+    def __init__(self, name, scene_handler):
+        name = min(name, 5)
         super(ExploreScene, self).__init__(name, scene_handler)
-        self.texts = texts
-        self.texts = util.wiki.random_texts(int(name))
+        self.texts = util.wiki.random_texts(name)
+        
+        def vet_texts(texts):
+            ok_texts = {}
+            for t in texts.iterkeys():
+                if 1 < len([l for l in texts[t].split('\n') if l]) < 11:
+                    ok_texts[t] = texts[t]
+            return ok_texts
+        
+        self.texts = vet_texts(self.texts)
+        while len(self.texts) < self.name:
+            print 'one or more articles was too long or too short, getting some more'
+            new_stuff = util.wiki.random_texts(name-len(self.texts))
+            self.texts.update(vet_texts(new_stuff))
+        
         self.text_completions = {}
         self.pieces = []
         self.hud_batch = pyglet.graphics.Batch()
         self.hud_objects = set()
+        
         lx = 10
         for t in self.texts.iterkeys():
             self.text_completions[t] = []
@@ -88,7 +106,7 @@ class ExploreScene(scene.Scene):
     
     def load(self):
         self.grid = []
-        with pyglet.resource.file('game/levels/%s.txt' % self.name) as f:
+        with pyglet.resource.file('game/levels/%d.txt' % ((self.name-1) % NUM_LEVELS)) as f:
             for line in f:
                 row = line.split()
                 self.width = len(row)
@@ -179,7 +197,7 @@ class ExploreScene(scene.Scene):
     # Update/draw
     
     def bump(self, piece):
-        print 'captured', self.texts[piece[0]]
+        # print 'captured', self.texts[piece[0]]
         self.text_completions[piece[0]][piece[1]] = 1
         self.update_hud()
         
@@ -189,8 +207,7 @@ class ExploreScene(scene.Scene):
                     return False
             return True
         if all_true([all_true(l) for l in self.text_completions.itervalues()]):
-            next = ExploreScene("2", self.handler, self.texts)
-            self.handler.go_to(next)
+            self.handler.go_to(lambda: ExploreScene(self.name+1, self.handler), alt=True)
     
     def update_hud(self):
         for title, i, txt, l in self.pieces:
@@ -206,8 +223,6 @@ class ExploreScene(scene.Scene):
                                    ('v2f/static', (x1, y1, x2, y2, 
                                                    x3, y3, x4, y4)),
                                    ('c4B/static', (50,80,128,255)*4))
-                # [x1, y1, x2, y2, x3, y3,
-                #         x2, y2, x3, y3, x4, y4]
     
     def update(self, dt=0):
         if self.paused: 
