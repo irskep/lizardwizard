@@ -19,6 +19,7 @@ keys = None
 norm_w = 1280
 norm_h = 720
 scale_factor = 1.0
+dj = None
 
 camera_min = (norm_w//2, norm_h//2)
 camera_max = (norm_w, norm_h)

@@ -31,7 +31,12 @@ class Terrain(object):
     
     def random_clear_cell(self):
         x, y = random.randint(0, self.width-1), random.randint(0, self.height-1)
-        while self.wall(x, y):
+        def full(x, y):
+            try:
+                return self.wall(x, y)
+            except:
+                return True
+        while full(x, y):
             x, y = random.randint(0, self.width), random.randint(0, self.height)
         return x, y
     

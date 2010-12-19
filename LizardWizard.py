@@ -86,6 +86,11 @@ class GameWindow(pyglet.window.Window):
         # Draw really only needs 60 FPS, update can be faster.
         pyglet.clock.schedule_interval(self.on_draw, 1/72.0)
         pyglet.clock.schedule_interval(self.scene_handler.update, 1/72.0)
+        
+        gamestate.dj = pyglet.media.Player()
+        gamestate.dj.eos_action = 'loop'
+        gamestate.dj.queue(pyglet.resource.media('game/music.ogg', streaming=True))
+        gamestate.dj.play()
     
     def finish_title(self):
         # self.scene_draw = self.scene_handler.draw

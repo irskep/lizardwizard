@@ -161,15 +161,7 @@ class ExploreScene(scene.Scene):
         
         if len(arbiter.shapes) != 2:
             return True # Give up
-        if 'player' in tags and 'foot' in tags and self.events:
-            for p in self.players:
-                p.move_x, p.move_y = 0, 0
-                p.reset_motion()
-                p.update_walk_anim()
-            f = [x for x in self.actors.itervalues() if x.kind == 'foot'][0]
-            self.remove(f)
-            self.handler.go_to("2")
-        elif 'player' in tags and 'fly' in tags:
+        if 'player' in tags and 'fly' in tags:
             a, b = arbiter.shapes
             if b.parent.kind == 'player':
                 a, b = b, a
@@ -193,10 +185,10 @@ class ExploreScene(scene.Scene):
         
         def all_true(l):
             for item in l:
-                if not l:
+                if item not in (1, True):
                     return False
             return True
-        if all_true(all_true(l) for l in self.text_completions.values()):
+        if all_true([all_true(l) for l in self.text_completions.itervalues()]):
             next = ExploreScene("2", self.handler, self.texts)
             self.handler.go_to(next)
     

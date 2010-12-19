@@ -1,26 +1,25 @@
 Morp, a young apprentice to the aging Lizard Wizard Edrick, was woken in his sleep by his master.
 
+EDRICK: Morp! Wake!
+
 MORP: Nnng? Wh?
 
-EDRICK: Come, Morp. It is time for your trials.
+EDRICK: The rascal Fredward has stolen Wikipedia!
 
-MORP: Trials? What trials?
+EDRICK: He fed its pieces to his Magic Brain Flies and set them loose in the Perlin Caves.
 
-EDRICK: You are nearly ready to becom a Lizard Wizard. Now you must go on the Apprentice's Surprise Quest.
+MORP: Why do you care?
 
-MORP: Why is it a surprise?
+EDRICK: I've been using Wikipedia for years to look up spells. Why do you think I don't own spellbooks?
 
-EDRICK: Because I just love surprises!
-EDRICK: For other people.
+EDRICK: There's only one thing to do.
 
-EDRICK: You will go into the Perlin Caves in search of enlightenment in three forms:
+EDRICK: I'm too old to go exploring, so you must venture into the caves yourself.
 
-EDRICK: Mastery of the Feet
-EDRICK: Mastery of the Tail
-EDRICK: and Mastery of the Tongue.
+EDRICK: Eat the flies you find to absorb their knowledge. Then come to me and we'll put the information back into the system.
 
-EDRICK: You will find an artifact for each form of enlightenment. Bring them back.
+EDRICK: I can sense the general area of the flies that ate each article. I will tell you where to search for them.
 
-EDRICK: Did you get all that?
+---
 
-MORP: I think so. To the caves!
+EDRICK: There are three spellbooks in this part of the cave.
