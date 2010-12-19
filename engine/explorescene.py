@@ -3,8 +3,6 @@ The Scene class manages all objects (Actors) in a level.
 """
 
 import pyglet
-
-import pyglet
 import pymunk
 import itertools
 import functools
@@ -32,20 +30,19 @@ class ExploreScene(scene.Scene):
     def __init__(self, name, scene_handler):
         name = min(name, 5)
         super(ExploreScene, self).__init__(name, scene_handler)
-        self.texts = util.wiki.random_texts(name)
         
         def vet_texts(texts):
             ok_texts = {}
             for t in texts.iterkeys():
-                if 1 < len([l for l in texts[t].split('\n') if l]) < 11:
-                    ok_texts[t] = texts[t]
+                pieces = [l for l in texts[t].split('\n') if l.strip() and not l.startswith('|')]
+                if 1 < len(pieces) < 11:
+                    ok_texts[t] = pieces
             return ok_texts
         
-        self.texts = vet_texts(self.texts)
+        self.texts = {}
         while len(self.texts) < self.name:
-            print 'one or more articles was too long or too short, getting some more'
-            new_stuff = util.wiki.random_texts(name-len(self.texts))
-            self.texts.update(vet_texts(new_stuff))
+            self.texts = vet_texts(util.wiki.random_texts(name))
+        print self.texts
         
         self.text_completions = {}
         self.pieces = []
@@ -70,7 +67,7 @@ class ExploreScene(scene.Scene):
                                                x3, y3, x4, y4,
                                                x4, y4, x1, y1)),
                                ('c4B/static', (255,255,255,255)*8))
-            for i, p in enumerate(l for l in self.texts[t].split('\n') if l):
+            for i, p in enumerate(self.texts[t]):
                 self.pieces.append((t, i, p, l))
                 self.text_completions[t].append(0)
             lx += w + 30
@@ -87,6 +84,13 @@ class ExploreScene(scene.Scene):
         self.pymunk_accum = 0.0
         
         self.load()
+        
+        self.topright_label = pyglet.text.Label('', multiline=True, font_size=12,
+                                                x=gamestate.norm_w-400, y=gamestate.norm_h,
+                                                anchor_x='left', anchor_y='top',
+                                                width=400, batch=self.hud_batch,
+                                                group=pyglet.graphics.OrderedGroup(2),
+                                                color=[255,255,255,255])
         
         self.events = 0
         
@@ -197,7 +201,10 @@ class ExploreScene(scene.Scene):
     # Update/draw
     
     def bump(self, piece):
-        # print 'captured', self.texts[piece[0]]
+        print 'captured', self.texts[piece[0]][piece[1]]
+        self.topright_label.begin_update()
+        self.topright_label.text = self.texts[piece[0]][piece[1]]
+        self.topright_label.end_update()
         self.text_completions[piece[0]][piece[1]] = 1
         self.update_hud()
         

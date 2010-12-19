@@ -24,7 +24,9 @@ def infos_for(pageids):
 def text_for(infos):
     texts = {}
     for title in infos.iterkeys():
-        texts[title] = req(infos[title]).read()
+        request = req(infos[title])
+        encoding=request.headers['content-type'].split('charset=')[-1]
+        texts[title] = unicode(request.read(), encoding)
     return texts
 
 def remove_useless_info(t):
@@ -35,10 +37,13 @@ def remove_useless_info(t):
         if len(s) == 2:
             left, right = item.split(']]')
             x = left.split('|')[0].split(':')[-1]
-            final_list.append(x)
-            final_list.append(right)
+            if not x.startswith('http'):
+                final_list.append(x)
+            if not right.startswith('http'):
+                final_list.append(right)
         else:
-            final_list.append(s[0])
+            if not s[0].startswith('http'):
+                final_list.append(s[0])
     return ''.join(final_list)
 
 def truncate_footers(t):
