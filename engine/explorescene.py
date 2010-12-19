@@ -29,6 +29,7 @@ class ExploreScene(scene.Scene):
     def __init__(self, name, scene_handler, texts):
         super(ExploreScene, self).__init__(name, scene_handler)
         self.texts = texts
+        self.texts = util.wiki.random_texts(int(name))
         self.text_completions = {}
         self.pieces = []
         self.hud_batch = pyglet.graphics.Batch()
@@ -51,12 +52,10 @@ class ExploreScene(scene.Scene):
                                                x3, y3, x4, y4,
                                                x4, y4, x1, y1)),
                                ('c4B/static', (255,255,255,255)*8))
-            
-            for i, p in enumerate(t.split('\n\n')):
-                self.pieces.append((t, i, self.texts[p], l))
+            for i, p in enumerate(l for l in self.texts[t].split('\n') if l):
+                self.pieces.append((t, i, p, l))
                 self.text_completions[t].append(0)
             lx += w + 30
-        
         self.update_hud()
         
         self.players = []
@@ -134,7 +133,6 @@ class ExploreScene(scene.Scene):
         self.actors[na.name] = na
     
     def _make_fly(self, x, y, piece):
-        x, y = 3, 3
         xx, yy = self.place(x, y)
         na = fly.Fly(self, self.batch, xx, yy, piece)
         self.actors[na.name] = na
@@ -181,6 +179,7 @@ class ExploreScene(scene.Scene):
     # Update/draw
     
     def bump(self, piece):
+        print 'captured', self.texts[piece[0]]
         self.text_completions[piece[0]][piece[1]] = 1
         self.update_hud()
         

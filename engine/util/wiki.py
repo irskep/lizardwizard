@@ -19,12 +19,12 @@ def random_articles(n=1):
 def infos_for(pageids):
     j = json.load(req(info_url % '|'.join(str(i) for i in pageids)))['query']['pages'].itervalues()
     
-    return dict[(i['title'], i['fullurl'] + "?action=raw") for i in j]
+    return dict([(i['title'], i['fullurl'] + "?action=raw") for i in j])
 
 def text_for(infos):
     texts = {}
     for title in infos.iterkeys():
-        texts[title] = req(url).read()
+        texts[title] = req(infos[title]).read()
     return texts
 
 def remove_useless_info(t):
@@ -42,7 +42,7 @@ def remove_useless_info(t):
     return ''.join(final_list)
 
 def truncate_footers(t):
-    for stripper in ('References', 'See Also', 'External Links', 'Further Reading', 'External links', 'See also', 'Further reading', 'Media'):
+    for stripper in ('References', 'See Also', 'External Links', 'Further Reading', 'External links', 'See also', 'Further reading', 'Media', 'Bibliography'):
         t = t.split('\n==%s==' % stripper)[0]
         t = t.split('\n== %s ==' % stripper)[0]
         t = t.split('\n== %s==' % stripper)[0]
@@ -64,9 +64,10 @@ def sanitize(t):
     return t
 
 def random_texts(n=1):
-    infos = infos_for(random_articles(n))):
-    for title in infos.iterkeys():
-        infos[title] = sanitize(infos[title])
+    texts = text_for(infos_for(random_articles(n)))
+    for title in texts.iterkeys():
+        texts[title] = sanitize(texts[title])
+    return texts
 
 # def worker():
 #     while True:

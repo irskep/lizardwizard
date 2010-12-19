@@ -106,3 +106,4 @@ def image_alpha_at_point(img, x, y):
 import draw
 import interpolator
 import settings
+import wiki

@@ -51,11 +51,11 @@ class Actor(object):
     
     def init_physics(self, x, y):
         mass = 100
-        moment = pymunk.moment_for_circle(mass, 0, gamestate.TILE_SIZE*0.4)
+        moment = pymunk.moment_for_circle(mass, 0, gamestate.TILE_SIZE*0.6)
         self.body = pymunk.Body(mass, moment)
         self.body.position = (x, y)
         # self.body.angle = r*DEG_TO_RAD
-        s = pymunk.Circle(self.body, gamestate.TILE_SIZE*0.4)
+        s = pymunk.Circle(self.body, gamestate.TILE_SIZE*0.6)
         s.parent = self
         s.elasticity = 0.0
         self.shapes.append(s)
