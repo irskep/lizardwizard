@@ -30,7 +30,7 @@ class Terrain(object):
         self.instantiate_lines()
     
     def random_clear_cell(self):
-        x, y = random.randint(0, self.width), random.randint(0, self.height)
+        x, y = random.randint(0, self.width-1), random.randint(0, self.height-1)
         while self.wall(x, y):
             x, y = random.randint(0, self.width), random.randint(0, self.height)
         return x, y
