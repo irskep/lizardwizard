@@ -52,6 +52,7 @@ class Actor(object):
         # self.body.angle = r*DEG_TO_RAD
         s = pymunk.Circle(self.body, gamestate.TILE_SIZE*0.4)
         s.parent = self
+        s.elasticity = 0.0
         self.shapes.append(s)
         self.scene.space.add(self.body, *self.shapes)
     
@@ -74,6 +75,10 @@ class Actor(object):
     
     def start_moving(self):
         self.sprite.image = images.walks[self.kind]
+    
+    def estop(self):
+        self.move_x, self.move_y = 0
+        self.stop_moving()
     
     def stop_moving(self):
         if self.move_x != 0 or self.move_y != 0:

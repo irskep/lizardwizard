@@ -128,10 +128,10 @@ class Scene(object):
         return True
     
     def collision_events(self, space, arbiter, *args, **kwargs):
-        try:
-            tags = [s.parent.kind for s in arbiter.shapes]
-        except AttributeError:
-            return True
+        tags = []
+        for s in arbiter.shapes:
+            if hasattr(s, 'parent'):
+                tags.append(s.parent.kind)
         
         if 'player' in tags and 'foot' in tags and self.events:
             for p in self.players:
@@ -142,6 +142,14 @@ class Scene(object):
             f.delete()
             del self.actors[f.name]
             self.handler.go_to("2")
+        elif 'player' in tags and len(arbiter.shapes) == 2:
+            a, b = arbiter.shapes
+            if hasattr(b, 'parent'):
+                a, b = b, a
+            if a in a.parent.tongue_shapes:
+                if a.parent.tongue_state == player.TONGUE_EXITING and a in a.parent.tongue_shapes:
+                    a.parent.tongue_state = player.TONGUE_ENTERING
+                return False
         return True
     
     # Update/draw
