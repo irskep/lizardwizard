@@ -182,3 +182,26 @@ class ForeverLinearInterpolator(ForeverInterpolator):
             self.start = self.start % self.mod
         setattr(self.host_object, self.attr_name, self.start)
     
+
+class FadeInterpolator(Interpolator):
+    def __init__(self, host_object, attr_name, rgb=(255,255,255), **kwargs):
+        self.rgb = rgb
+        super(FadeInterpolator, self).__init__(host_object, attr_name, **kwargs)
+        self.update(0.0)
+    
+    def update(self, dt=0):
+        super(FadeInterpolator, self).update(dt)
+        if not self.host_object:
+            return
+        new_val = (self.rgb[0], self.rgb[1], self.rgb[2], int(self.start + self.progress*self.speed))
+        setattr(self.host_object, self.attr_name, new_val)
+    
+    def complete(self):
+        if not self.host_object:
+            return True
+        if super(FadeInterpolator, self).complete():
+            setattr(self.host_object, self.attr_name, (self.rgb[0], self.rgb[1], self.rgb[2], int(self.duration*self.speed)))
+            return True
+        else:
+            return False
+    

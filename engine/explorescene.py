@@ -42,7 +42,6 @@ class ExploreScene(scene.Scene):
         self.texts = {}
         while len(self.texts) < self.name:
             self.texts = vet_texts(util.wiki.random_texts(name))
-        print self.texts
         
         self.text_completions = {}
         self.pieces = []
@@ -86,7 +85,7 @@ class ExploreScene(scene.Scene):
         self.load()
         
         self.topright_label = pyglet.text.Label('', multiline=True, font_size=12,
-                                                x=gamestate.norm_w-400, y=gamestate.norm_h,
+                                                x=gamestate.norm_w-410, y=gamestate.norm_h-10,
                                                 anchor_x='left', anchor_y='top',
                                                 width=400, batch=self.hud_batch,
                                                 group=pyglet.graphics.OrderedGroup(2),
@@ -200,14 +199,7 @@ class ExploreScene(scene.Scene):
     
     # Update/draw
     
-    def bump(self, piece):
-        print 'captured', self.texts[piece[0]][piece[1]]
-        self.topright_label.begin_update()
-        self.topright_label.text = self.texts[piece[0]][piece[1]]
-        self.topright_label.end_update()
-        self.text_completions[piece[0]][piece[1]] = 1
-        self.update_hud()
-        
+    def check_for_next(self, dt=0):
         def all_true(l):
             for item in l:
                 if item not in (1, True):
@@ -215,6 +207,28 @@ class ExploreScene(scene.Scene):
             return True
         if all_true([all_true(l) for l in self.text_completions.itervalues()]):
             self.handler.go_to(lambda: ExploreScene(self.name+1, self.handler), alt=True)
+    
+    def bump(self, piece):
+        self.topright_label.begin_update()
+        self.topright_label.text = self.texts[piece[0]][piece[1]]
+        self.topright_label.end_update()
+        def fade_out(dt=0):
+            interp = interpolator.FadeInterpolator(self.topright_label, 'color', duration=0.5,
+                                                    start=255, end=0, 
+                                                    done_function=self.check_for_next)
+            self.interp.add_interpolator(interp)
+        
+        def wait(dt=0):
+            pyglet.clock.schedule_once(fade_out, 3.0)
+        
+        interp = interpolator.FadeInterpolator(self.topright_label, 'color', duration=0.5,
+                                                start=0, end=255, done_function=wait)
+        for i in self.interp.interpolators:
+            if i.target == self.topright_label:
+                i.progress = 10000000000
+        self.interp.add_interpolator(interp)
+        self.text_completions[piece[0]][piece[1]] = 1
+        self.update_hud()
     
     def update_hud(self):
         for title, i, txt, l in self.pieces:
