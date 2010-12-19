@@ -213,11 +213,11 @@ class ExploreScene(scene.Scene):
         for title, i, txt, l in self.pieces:
             c = self.text_completions[title]
             if c[i] == 1:
-                w = max(l.content_width, 200)/float(len(c))
-                x = l.x + w*i
-                x1, y1 = x-5, l.y-l.content_height-5
+                w = (max(l.content_width, 200)+10)/float(len(c))
+                x = l.x-5 + w*i
+                x1, y1 = x, l.y-l.content_height-5
                 x2, y2 = x1, l.y+5
-                x3, y3 = x+w+5, y2
+                x3, y3 = x+w, y2
                 x4, y4 = x3, y1
                 self.hud_batch.add(4, pyglet.gl.GL_QUADS, pyglet.graphics.OrderedGroup(2),
                                    ('v2f/static', (x1, y1, x2, y2, 
