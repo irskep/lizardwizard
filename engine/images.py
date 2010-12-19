@@ -20,7 +20,7 @@ sits = {
     'fly': walks['fly']
 }
 
-comics = [pyglet.resource.image('game/images/comic_%d.png' % i) for i in range(0, 12)]
+comics = [pyglet.resource.image('game/images/comic_%d.png' % i) for i in range(0, 13)]
 
 for img in itertools.chain(walks.itervalues(), sits.itervalues()):
     try:

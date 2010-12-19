@@ -19,7 +19,7 @@ import util
 
 from util import pushmatrix, draw, interpolator
 
-NUM_LEVELS = 2
+NUM_LEVELS = 4
 
 pymunk_update_t = 1/120.0
 
@@ -34,7 +34,7 @@ class ExploreScene(scene.Scene):
         def vet_texts(texts):
             ok_texts = {}
             for t in texts.iterkeys():
-                pieces = [l for l in texts[t].split('\n') if l.strip() and not l.startswith('|')]
+                pieces = [l for l in texts[t].split('\n') if l.strip() and not l.startswith('|') and not l.startswith('!')]
                 if 1 < len(pieces) < 11:
                     ok_texts[t] = pieces
             return ok_texts
@@ -224,7 +224,7 @@ class ExploreScene(scene.Scene):
         interp = interpolator.FadeInterpolator(self.topright_label, 'color', duration=0.5,
                                                 start=0, end=255, done_function=wait)
         for i in self.interp.interpolators:
-            if i.target == self.topright_label:
+            if i.host_object == self.topright_label:
                 i.progress = 10000000000
         self.interp.add_interpolator(interp)
         self.text_completions[piece[0]][piece[1]] = 1
