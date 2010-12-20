@@ -40,7 +40,7 @@ class ExploreScene(scene.Scene):
         
         self.texts = {}
         retry=0
-        while len(self.texts) < max(self.name, 5):
+        while len(self.texts) < min(self.name, 5):
             retry+=1
             if retry>1:
                 print 'finding more appropriately sized articles...'
