@@ -41,7 +41,7 @@ class GameWindow(pyglet.window.Window):
             super(GameWindow,self).__init__(fullscreen=True, vsync=True)
         else:
             super(GameWindow,self).__init__(width=gamestate.norm_w, 
-                                                height=gamestate.norm_h, vsync=False)
+                                                height=gamestate.norm_h, vsync=True)
         self.set_caption(gamestate.name)
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
