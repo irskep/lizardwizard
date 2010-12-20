@@ -12,6 +12,7 @@ Requirements
 * [Pymunk](http://code.google.com/p/pymunk/)
 * [noise](http://pypi.python.org/pypi/noise/)
 * [pyglet](http://www.pyglet.org/)
+* [yaml](http://www.pyyaml.org/)
 
 All of these things can be had using `pip` or `easy_install`.
 
