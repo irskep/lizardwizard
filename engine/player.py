@@ -16,6 +16,8 @@ TONGUE_SIZE = 3
 
 GROUP = 1
 
+slurp = pyglet.resource.media('game/slurp.wav', streaming=False)
+
 class Player(actor.Actor):
     def __init__(self, scn, batch, number, x=640, y=25):
         super(Player, self).__init__(scn, batch, kind='player', x=x, y=y)
@@ -141,6 +143,7 @@ class Player(actor.Actor):
         self.scene.space.remove(target.body)
         self.tongue_state = TONGUE_ENTERING
         self.scene.bump(target.piece)
+        slurp.play()
     
     def update_tongue(self, dt):
         if self.tongue_state == TONGUE_EXITING:

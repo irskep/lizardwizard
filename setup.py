@@ -9,7 +9,7 @@ mainscript = 'LizardWizard.py'
 
 OPTIONS = dict(
     argv_emulation=True,
-    frameworks=['pymunk/libchipmunk.dylib'],
+    frameworks=['pymunk/libchipmunk.dylib', 'libavbin.dylib'],
     plist = dict(CFBundleIconFile='lizardwizard.icns'), 
     # PyRuntimeLocations=['/Library/Frameworks/Python.framework/Versions/2.7/Python']
     #, '/System/Library/Frameworks/Python.framework/Versions/Current/Python'])
