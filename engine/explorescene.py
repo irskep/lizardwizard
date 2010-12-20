@@ -35,12 +35,16 @@ class ExploreScene(scene.Scene):
             ok_texts = {}
             for t in texts.iterkeys():
                 pieces = [l for l in texts[t].split('\n') if l.strip() and not l.startswith('|') and not l.startswith('!')]
-                if 1 < len(pieces) < 11:
+                if 3 < len(pieces) < 15:
                     ok_texts[t] = pieces
             return ok_texts
         
         self.texts = {}
+        retry=0
         while len(self.texts) < self.name:
+            retry+=1
+            if retry>1:
+                print 'finding more appropriately sized articles...'
             self.texts = vet_texts(util.wiki.random_texts(name))
         
         self.text_completions = {}
