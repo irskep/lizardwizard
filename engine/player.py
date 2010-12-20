@@ -148,7 +148,7 @@ class Player(actor.Actor):
     def update_tongue(self, dt):
         if self.tongue_state == TONGUE_EXITING:
             self.tongue_progress += dt
-        if self.tongue_progress > .3:
+        if self.tongue_progress > 3:
             self.tongue_state = TONGUE_ENTERING
         if self.tongue_state == TONGUE_ENTERING:
             self.tongue_progress -= dt
@@ -159,7 +159,7 @@ class Player(actor.Actor):
             c, s = math.cos(a), math.sin(a)
             bx, by = self.body.position[0], self.body.position[1]
             p = self.tongue_progress
-            self.tongue_body.position = (bx+c*(20+1000*p), by+s*(20+1000*p))
+            self.tongue_body.position = (bx+c*(20+100*p), by+s*(20+100*p))
             self.tongue_vl.vertices = self.vertices_for_tongue()
             if self.target:
                 self.target.body.position = self.tongue_body.position

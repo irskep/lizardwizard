@@ -28,7 +28,6 @@ class ExploreScene(scene.Scene):
     # Initialization
     
     def __init__(self, name, scene_handler):
-        name = min(name, 5)
         super(ExploreScene, self).__init__(name, scene_handler)
         
         def vet_texts(texts):
@@ -41,7 +40,7 @@ class ExploreScene(scene.Scene):
         
         self.texts = {}
         retry=0
-        while len(self.texts) < self.name:
+        while len(self.texts) < max(self.name, 5):
             retry+=1
             if retry>1:
                 print 'finding more appropriately sized articles...'
