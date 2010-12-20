@@ -204,8 +204,6 @@ class ExploreScene(scene.Scene):
     # Update/draw
     
     def check_for_next(self, dt=0):
-        self.handler.go_to(lambda: ExploreScene(self.name+1, self.handler), alt=True)
-        return
         def all_true(l):
             for item in l:
                 if item not in (1, True):
