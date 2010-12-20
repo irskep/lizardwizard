@@ -35,8 +35,8 @@ class ExploreScene(scene.Scene):
             ok_texts = {}
             for t in texts.iterkeys():
                 pieces = [l for l in texts[t].split('\n') if l.strip() and not l.startswith('|') and not l.startswith('!')]
-                if 3 < len(pieces) < 15:
-                    ok_texts[t] = pieces
+                if 3 <= len(pieces):
+                    ok_texts[t] = pieces[:10]
             return ok_texts
         
         self.texts = {}
@@ -204,6 +204,8 @@ class ExploreScene(scene.Scene):
     # Update/draw
     
     def check_for_next(self, dt=0):
+        self.handler.go_to(lambda: ExploreScene(self.name+1, self.handler), alt=True)
+        return
         def all_true(l):
             for item in l:
                 if item not in (1, True):
@@ -259,7 +261,8 @@ class ExploreScene(scene.Scene):
         
         super(ExploreScene, self).update(dt)
         
-        self.camera.position = self.players[0].position
+        if self.players:
+            self.camera.position = self.players[0].position
     
     def draw(self, dt=0):
         super(ExploreScene, self).draw(dt)
