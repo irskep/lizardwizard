@@ -77,7 +77,7 @@ class GameWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.on_draw, 1/72.0)
         pyglet.clock.schedule_interval(self.scene_handler.update, 1/72.0)
         
-        music = True
+        music = False
         if music:
             gamestate.dj = pyglet.media.Player()
             gamestate.dj.eos_action = 'loop'
