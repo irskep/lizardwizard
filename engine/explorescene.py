@@ -27,24 +27,10 @@ class ExploreScene(scene.Scene):
     
     # Initialization
     
-    def __init__(self, name, scene_handler):
+    def __init__(self, name, scene_handler, texts):
+        # texts = util.wiki.text_dicts(min(self.name, 5))
         super(ExploreScene, self).__init__(name, scene_handler)
-        
-        def vet_texts(texts):
-            ok_texts = {}
-            for t in texts.iterkeys():
-                pieces = [l for l in texts[t].split('\n') if l.strip() and not l.startswith('|') and not l.startswith('!')]
-                if 3 <= len(pieces):
-                    ok_texts[t] = pieces[:10]
-            return ok_texts
-        
-        self.texts = {}
-        retry=0
-        while len(self.texts) < min(self.name, 5):
-            retry+=1
-            if retry>1:
-                print 'finding more appropriately sized articles...'
-            self.texts = vet_texts(util.wiki.random_texts(name))
+        self.texts = texts
         
         self.text_completions = {}
         self.pieces = []
@@ -209,7 +195,7 @@ class ExploreScene(scene.Scene):
                     return False
             return True
         if all_true([all_true(l) for l in self.text_completions.itervalues()]):
-            self.handler.go_to(lambda: ExploreScene(self.name+1, self.handler), alt=True)
+            self.handler.go_to(self.name+1)
     
     def bump(self, piece):
         self.topright_label.begin_update()

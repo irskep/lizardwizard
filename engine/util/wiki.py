@@ -82,20 +82,21 @@ def random_texts(n=1):
             if errcount > 2:
                 import sys
                 sys.exit(1)
+#
+def vet_texts(texts):
+    ok_texts = {}
+    for t in texts.iterkeys():
+        pieces = [l for l in texts[t].split('\n') if l.strip() and not l.startswith('|') and not l.startswith('!')]
+        if 3 <= len(pieces):
+            ok_texts[t] = pieces[:10]
+    return ok_texts
 
-# def worker():
-#     while True:
-#         item = q.get()
-#         do_work(item)
-#         q.task_done()
-# 
-# q = Queue()
-# for i in range(num_worker_threads):
-#      t = Thread(target=worker)
-#      t.daemon = True
-#      t.start()
-# 
-# for item in source():
-#     q.put(item)
-# 
-# q.join()
+def text_dicts(n=5):
+    texts = {}
+    retry=0
+    while len(texts) < n:
+        retry+=1
+        if retry>1:
+            print 'finding more appropriately sized articles...'
+        texts = vet_texts(random_texts(n))
+    return texts

@@ -17,7 +17,7 @@ class Scene(object):
     
     # Initialization
     
-    def __init__(self, name, scene_handler=None):
+    def __init__(self, name, scene_handler):
         super(Scene, self).__init__()
         self.name = name
         self.handler = scene_handler

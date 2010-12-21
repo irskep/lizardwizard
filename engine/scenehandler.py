@@ -4,6 +4,7 @@ The scene handler is responsible for transitioning between scenes as well as sav
 
 import json
 import sys
+import threading
 
 import pyglet
 
@@ -30,7 +31,10 @@ class SceneHandler(actionsequencer.ActionSequencer):
         self.fade_sprite_2 = pyglet.sprite.Sprite(pyglet.resource.image('game/images/fade2.png'), 
                                                 0, 0, batch=self.batch)
         self.fade_sprite_2.opacity = 0.0
-        self.fs = self.fade_sprite_2
+        self.fs = self.fade_sprite
+        
+        self.next_text_ready = False
+        self.next_text = {'error': 'error'}
     
     def set_first_scene(self, scn):
         self.set_scenes(scn)
@@ -48,23 +52,19 @@ class SceneHandler(actionsequencer.ActionSequencer):
 
     # Called by a scene to load a new scene.
     # If dir is specified a sliding transition is used
-    def go_to(self, next_scene_func=None, immediate=False, alt=True):
-            
-        if next_scene_func is None:
-            sys.exit(0)
-        else:
-            if immediate:
-                self.scene.exit()
-                self.set_scenes(next_scene_func())
-                self.scene.enter()
-            else:
-                if alt:
-                    self.fs = self.fade_sprite
-                else:
-                    self.fs = self.fade_sprite_2
-                self.fade_to(next_scene_func)
+    def go_to(self, name=1):
+        self.fade_to_explore(name)
     
-    def fade_to(self, next_scene_func):
+    def fade_to_explore(self, name):
+        self.next_text_ready = False
+        def worker():
+            self.next_text = util.wiki.text_dicts(min(name, 5))
+            self.next_text_ready = True
+
+        t = threading.Thread(target=worker)
+        t.daemon = True
+        t.start()
+        
         InterpClass = interpolator.LinearInterpolator
         
         def complete_transition(ending_action=None):
@@ -73,13 +73,22 @@ class SceneHandler(actionsequencer.ActionSequencer):
         
         def fade_in(ending_action=None):
             # Remove scene
-            self.set_scenes(next_scene_func())
+            self.set_scenes(explorescene.ExploreScene(name, self, self.next_text))
             interp = InterpClass(self, 'blackout_alpha', end=0, start=1.0, duration=self.fade_time,
                                 done_function=complete_transition)
             self.controller.add_interpolator(interp)
+        
+        def check_fade_in(dt=0):
+            if self.next_text_ready:
+                fade_in()
+                self.next_text_ready = False
+                self.next_text = {'error': 'error'}
+            else:
+                pyglet.clock.schedule_once(check_fade_in, 0.5)
+        
         self.scene.exit()
         interp = InterpClass(self, 'blackout_alpha', end=1.0, start=0, duration=self.fade_time,
-                            done_function=fade_in)
+                            done_function=check_fade_in)
         self.controller.add_interpolator(interp)
     
     def update(self, dt=0):

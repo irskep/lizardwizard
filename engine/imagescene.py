@@ -31,7 +31,7 @@ class ImageScene(scene.Scene):
         if self.pos < len(images.comics):
             self.sprite.image = images.comics[self.pos]
         else:
-            self.handler.go_to(lambda: ExploreScene(1, self.handler), alt=True)
+            self.handler.go_to(1)
     
     def draw(self):
         self.sprite.draw()
