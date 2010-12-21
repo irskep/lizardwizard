@@ -21,6 +21,7 @@ ITEMS_PER_SIGNAL = 2
 success_counter = 0
 
 def wiki_worker(ready_signals, results):
+    """ready_signals throttles requests so Wikipedia doesn't get mad. results is title/body duples"""
     def worker():
         while True:
             ready_signals.get()
