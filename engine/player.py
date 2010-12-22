@@ -14,7 +14,8 @@ TONGUE_ENTERING = 2
 
 TONGUE_SIZE = 3
 
-GROUP = 1
+BODY_GROUP = 1
+TONGUE_GROUP = 2
 
 slurp = pyglet.resource.media('game/slurp.wav', streaming=False)
 
@@ -66,7 +67,7 @@ class Player(actor.Actor):
         
         for size, offset in ((gamestate.TILE_SIZE*0.4, (0, 0)), (5, (0, 15)), (5, (0, -15))):
             s = pymunk.Circle(self.body, size, offset)
-            s.group = GROUP
+            s.group = BODY_GROUP
             s.parent = self
             s.elasticity = 0.0
             self.shapes.append(s)
@@ -190,7 +191,7 @@ class Player(actor.Actor):
         
         self.tongue_shapes = []
         sh = pymunk.Circle(self.tongue_body, 5, (0, 0))
-        sh.group = GROUP
+        sh.group = TONGUE_GROUP
         sh.parent = self
         sh.elasticity = 0.0
         self.tongue_shapes.append(sh)
