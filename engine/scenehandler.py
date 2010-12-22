@@ -16,7 +16,7 @@ import scene
 import util
 from util import interpolator
 
-WIKI_LOOKAHEAD = 4
+WIKI_LOOKAHEAD = 8
 ITEMS_PER_SIGNAL = 2
 success_counter = 0
 

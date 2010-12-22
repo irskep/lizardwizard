@@ -70,8 +70,6 @@ class GameWindow(pyglet.window.Window):
         
         self.scene_draw = self.scene_handler.draw
         
-        self.fps_display = pyglet.clock.ClockDisplay()
-        
         # Schedule drawing and update functions.
         # Draw really only needs 60 FPS, update can be faster.
         pyglet.clock.schedule_interval(self.on_draw, 1/72.0)
@@ -93,7 +91,6 @@ class GameWindow(pyglet.window.Window):
     def on_draw(self, dt=0):
         self.clear()
         self.scene_draw()
-        self.fps_display.draw()
     
     def on_key_press(self, symbol, modifiers):
         # Override default behavior of escape key quitting

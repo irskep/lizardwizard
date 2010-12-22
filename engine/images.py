@@ -22,6 +22,10 @@ sits = {
 
 comics = [pyglet.resource.image('game/images/comic_%d.png' % i) for i in range(0, 13)]
 
+background_image = pyglet.resource.image('game/images/background.png')
+
+background = pyglet.image.TileableTexture.create_for_image(background_image)
+
 for img in itertools.chain(walks.itervalues(), sits.itervalues()):
     try:
         img.anchor_x = img.width//2

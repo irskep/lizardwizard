@@ -4,3 +4,6 @@ pyglet/
 pymunk/
 yaml
 noise/
+build/
+dist
+

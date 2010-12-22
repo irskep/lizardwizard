@@ -11,6 +11,7 @@ import actor
 import camera
 import fly
 import gamestate
+import images
 import player
 import scene
 import scenehandler
@@ -123,11 +124,10 @@ class ExploreScene(scene.Scene):
             self._make_fly(x, y, p)
         
         hts = gamestate.TILE_SIZE//2
+        self.pixelwidth = self.width*gamestate.TILE_SIZE
+        self.pixelheight = self.height*gamestate.TILE_SIZE
         self.camera.max_bounds = (self.pixelwidth-gamestate.norm_w//2-hts,
                                   self.pixelheight-gamestate.norm_h//2-hts,)
-    
-    pixelwidth = property(lambda self: self.width*gamestate.TILE_SIZE)
-    pixelheight = property(lambda self: self.height*gamestate.TILE_SIZE)
     
     def place(self, x, y):
         return x*gamestate.TILE_SIZE, y*gamestate.TILE_SIZE
@@ -248,6 +248,8 @@ class ExploreScene(scene.Scene):
             self.camera.position = self.players[0].position
     
     def draw(self, dt=0):
-        super(ExploreScene, self).draw(dt)
+        with camera.apply_camera(self.camera):
+            images.background.blit_tiled(0, 0, 0, self.pixelwidth, self.pixelheight)
+            self.batch.draw()
         self.hud_batch.draw()
     
