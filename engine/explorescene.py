@@ -150,8 +150,8 @@ class ExploreScene(scene.Scene):
         self.actors[na.name] = na
     
     def local_to_world(self, x, y):
-        return ((x+self.camera.x-640)/gamestate.scale_factor,
-                (y+self.camera.y-360)/gamestate.scale_factor)
+        return (x/gamestate.scale_factor+self.camera.x-gamestate.norm_w//2,
+                y/gamestate.scale_factor+self.camera.y-gamestate.norm_h//2)
     
     # Physics
     

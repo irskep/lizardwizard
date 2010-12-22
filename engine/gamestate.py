@@ -17,7 +17,7 @@ MOVE_SPEED = 200.0
 main_window = None
 keys = None
 norm_w = 1280
-norm_h = 720
+norm_h = 800
 scale_factor = 1.0
 dj = None
 
@@ -36,11 +36,11 @@ def init_scale():
         scale_factor_1 = main_window.height / float(norm_h)
         scale_factor_2 = main_window.width / float(norm_w)
         norm_w_1 = int(main_window.width/scale_factor_1)
-        norm_h_2 = int(main_window.height/scale_factor_1)
+        norm_h_2 = int(main_window.height/scale_factor_2)
         if scale_factor_2 < scale_factor_1:
             norm_h = norm_h_2
             scale_factor = scale_factor_2
-        else:    
+        else:
             norm_w = norm_w_1
             scale_factor = scale_factor_1
     norm_theta = math.atan2(norm_h, norm_w)

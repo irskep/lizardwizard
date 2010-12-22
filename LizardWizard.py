@@ -60,7 +60,7 @@ class GameWindow(pyglet.window.Window):
         fs = imagescene.ImageScene(self.scene_handler)
         self.scene_handler.set_first_scene(fs)
         
-        pyglet.gl.glClearColor(0.81, 0.357, 0.255, 1.0)
+        pyglet.gl.glClearColor(0, 0, 0, 1.0)
         self.title_image = pyglet.resource.image('game/images/title1.png')
         w, h = self.title_image.width, self.title_image.height
         f = functools.partial(self.title_image.blit, self.width/2-w/2, self.height/2-h/2)
@@ -69,6 +69,8 @@ class GameWindow(pyglet.window.Window):
         self.finish_title()
         
         self.scene_draw = self.scene_handler.draw
+        
+        self.fps_display = pyglet.clock.ClockDisplay()
         
         # Schedule drawing and update functions.
         # Draw really only needs 60 FPS, update can be faster.
@@ -91,6 +93,7 @@ class GameWindow(pyglet.window.Window):
     def on_draw(self, dt=0):
         self.clear()
         self.scene_draw()
+        self.fps_display.draw()
     
     def on_key_press(self, symbol, modifiers):
         # Override default behavior of escape key quitting

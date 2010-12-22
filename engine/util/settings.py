@@ -1,4 +1,4 @@
-fullscreen = False
+fullscreen = True
 resources_path = 'resources'
 
 from pyglet.window import key
