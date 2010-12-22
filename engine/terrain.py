@@ -22,7 +22,7 @@ class Terrain(object):
         self.width = len(self.grid[0])
         self.height = len(self.grid)
         
-        self.fill_color = [0.2, 0.1, 0.05, 1.0]
+        # self.fill_color = [0.2, 0.1, 0.05, 1.0]
         self.line_color = [0.0, 0.0, 0.0, 1.0]
         self.fill_color = [0.0, 0.0, 0.0, 1.0]
         

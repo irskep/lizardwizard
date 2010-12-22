@@ -18,13 +18,13 @@ from util import interpolator
 
 WIKI_LOOKAHEAD = 8
 ITEMS_PER_SIGNAL = 2
-success_counter = 0
 
 def wiki_worker(ready_signals, results):
     """ready_signals throttles requests so Wikipedia doesn't get mad. results is title/body duples"""
     def worker():
         while True:
-            ready_signals.get()
+            for i in xrange(ITEMS_PER_SIGNAL):
+                ready_signals.get()
             items = util.wiki.text_dicts(ITEMS_PER_SIGNAL)
             for k, v in items.iteritems():
                 results.put((k, v))
@@ -98,15 +98,12 @@ class SceneHandler(actionsequencer.ActionSequencer):
             self.controller.add_interpolator(interp)
         
         def check_fade_in(dt=0):
-            global success_counter
             n = min(name, 5)
             for i in xrange(n-len(texts)):
                 try:
                     k, v = self.results.get_nowait()
                     texts[k] = v
-                    success_counter += 1
-                    if success_counter % 2 == 0:
-                        self.ready_signals.put(True)
+                    self.ready_signals.put(True)
                 except queue.Empty:
                     break
             if len(texts) >= n:
