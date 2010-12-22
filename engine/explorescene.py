@@ -68,6 +68,8 @@ class ExploreScene(scene.Scene):
         
         self.space = pymunk.Space()
         self.space._space.elasticIterations = 0
+        self.space.resize_static_hash(20)
+        self.space.resize_active_hash(20)
         self.space.set_default_collision_handler(self.collision_events, None, None,
                                                  self.enforce_wall_hugging)
         self.pymunk_accum = 0.0
