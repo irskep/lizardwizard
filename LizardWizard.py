@@ -60,14 +60,7 @@ class GameWindow(pyglet.window.Window):
         fs = imagescene.ImageScene(self.scene_handler)
         self.scene_handler.set_first_scene(fs)
         
-        pyglet.gl.glClearColor(0, 0, 0, 1.0)
-        self.title_image = pyglet.resource.image('game/images/title1.png')
-        w, h = self.title_image.width, self.title_image.height
-        f = functools.partial(self.title_image.blit, self.width/2-w/2, self.height/2-h/2)
-        self.scene_draw = f
-        # Load resources or something
-        self.finish_title()
-        
+        pyglet.gl.glClearColor(0.5, 0.3, 0.255, 1.0)
         self.scene_draw = self.scene_handler.draw
         
         self.fps_display = pyglet.clock.ClockDisplay()
@@ -83,12 +76,6 @@ class GameWindow(pyglet.window.Window):
             gamestate.dj.eos_action = 'loop'
             gamestate.dj.queue(pyglet.resource.media('game/music.wav', streaming=True))
             gamestate.dj.play()
-    
-    def finish_title(self):
-        # self.scene_draw = self.scene_handler.draw
-        # pyglet.gl.glClearColor(0, 0, 0, 1.0)
-        # pyglet.gl.glClearColor(0.2, 0.1, 0.05, 1.0)
-        pyglet.gl.glClearColor(0.5, 0.3, 0.255, 1.0)
     
     def on_draw(self, dt=0):
         self.clear()
