@@ -1,9 +1,9 @@
 *.pyc
 *.pyo
+*.ai
 pyglet/
 pymunk/
 yaml
 noise/
 build/
 dist
-
