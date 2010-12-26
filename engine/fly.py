@@ -8,9 +8,16 @@ import actor
 import gamestate
 import player
 
+colorsf = [(1.0, 0.0, 0.0, 1.0), (1.0, 0.5, 0.0, 1.0), (1.0, 1.0, 0.0, 1.0), 
+           (0.5, 1.0, 0.0, 1.0), (0.0, 1.0, 0.0, 1.0), (0.0, 1.0, 0.5, 1.0), 
+           (0.0, 1.0, 1.0, 1.0), (0.0, 0.5, 1.0, 1.0), (0.0, 0.0, 1.0, 1.0), 
+           (0.5, 0.0, 1.0, 1.0), (1.0, 0.0, 1.0, 1.0), (1.0, 0.0, 0.5, 1.0)]
+colorsb = [tuple([int(255*i) for i in c]) for c in colorsf]
+
 class Fly(actor.Actor):
-    def __init__(self, scn, batch, x, y, piece):
+    def __init__(self, scn, batch, x, y, piece, color=0):
         super(Fly, self).__init__(scn, batch, kind='fly', x=x, y=y)
+        self.sprite.color = colorsb[color % len(colorsb)][:3]
         self.piece = piece
         self.sprite.group = pyglet.graphics.OrderedGroup(1)
         self.angle_target = random.random()*math.pi*2.0
