@@ -17,6 +17,8 @@ TONGUE_SIZE = 3
 BODY_GROUP = 1
 TONGUE_GROUP = 2
 
+MOUSE_MOVE_DIST_SQ = 200**2 
+
 slurp = pyglet.resource.media('game/slurp.wav', streaming=False)
 
 class Player(actor.Actor):
@@ -83,21 +85,11 @@ class Player(actor.Actor):
                        self.move_target[0]-self.body.position[0])
         self.move_x, self.move_y = 0, 0
         ba = a
-        if gamestate.keys[self.k[settings.LEFT]]:
-            ba += 1.57
-            self.move_x += math.cos(a+1.57)
-            self.move_y += math.sin(a+1.57)
-        elif gamestate.keys[self.k[settings.RIGHT]]:
-            ba -= 1.57
-            self.move_x += math.cos(a-1.57)
-            self.move_y += math.sin(a-1.57)
-        elif gamestate.keys[self.k[settings.UP]]:
+        dx = self.x - self.move_target[0]
+        dy = self.y - self.move_target[1]
+        if dx*dx+dy*dy > MOUSE_MOVE_DIST_SQ:
             self.move_x += math.cos(a)
             self.move_y += math.sin(a)
-        elif gamestate.keys[self.k[settings.DOWN]]:
-            ba += 3.14
-            self.move_x -= math.cos(a)
-            self.move_y -= math.sin(a)
         
         last_ba = self.body.angle
         
