@@ -126,8 +126,8 @@ class SceneHandler(actionsequencer.ActionSequencer):
         with util.pushmatrix(gamestate.scale):
             for scn in self.scenes:
                 scn.draw()
-        if self.blackout_alpha > 0.0:
-            self.fs.opacity = self.blackout_alpha*255
-            self.fs.set_position(0, 0)
-            self.batch.draw()
+            if self.blackout_alpha > 0.0:
+                self.fs.opacity = self.blackout_alpha*255
+                self.fs.set_position(0, 0)
+                self.batch.draw()
     
