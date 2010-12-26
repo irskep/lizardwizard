@@ -29,7 +29,6 @@ class ExploreScene(scene.Scene):
     # Initialization
     
     def __init__(self, name, scene_handler, texts):
-        # texts = util.wiki.text_dicts(min(self.name, 5))
         super(ExploreScene, self).__init__(name, scene_handler)
         self.texts = texts
         
@@ -38,6 +37,32 @@ class ExploreScene(scene.Scene):
         self.hud_batch = pyglet.graphics.Batch()
         self.hud_objects = set()
         
+        self._init_texts()
+        
+        self.players = []
+        hts = gamestate.TILE_SIZE//2
+        self.camera.min_bounds = (gamestate.norm_w//2-hts, gamestate.norm_h//2-hts)
+        
+        self._init_physics()
+        
+        self.load()
+        
+        self._init_hud()
+        
+        self.events = 0
+        
+        self.update(0)
+    
+    def _init_physics(self):
+        self.space = pymunk.Space()
+        self.space._space.elasticIterations = 0
+        self.space.resize_static_hash(20)
+        self.space.resize_active_hash(20)
+        self.space.set_default_collision_handler(self.collision_events, None, None,
+                                                 self.enforce_wall_hugging)
+        self.pymunk_accum = 0.0
+    
+    def _init_texts(self):
         lx = 10
         for t in self.texts.iterkeys():
             self.text_completions[t] = []
@@ -60,32 +85,16 @@ class ExploreScene(scene.Scene):
                 self.pieces.append((t, i, p, l))
                 self.text_completions[t].append(0)
             lx += w + 30
+    
+    def _init_hud(self):
         self.update_hud()
-        
-        self.players = []
-        hts = gamestate.TILE_SIZE//2
-        self.camera.min_bounds = (gamestate.norm_w//2-hts, gamestate.norm_h//2-hts)
-        
-        self.space = pymunk.Space()
-        self.space._space.elasticIterations = 0
-        self.space.resize_static_hash(20)
-        self.space.resize_active_hash(20)
-        self.space.set_default_collision_handler(self.collision_events, None, None,
-                                                 self.enforce_wall_hugging)
-        self.pymunk_accum = 0.0
-        
-        self.load()
-        
         self.topright_label = pyglet.text.Label('', multiline=True, font_size=12,
                                                 x=gamestate.norm_w-410, y=gamestate.norm_h-10,
                                                 anchor_x='left', anchor_y='top',
                                                 width=400, batch=self.hud_batch,
                                                 group=pyglet.graphics.OrderedGroup(2),
                                                 color=[255,255,255,255])
-        
-        self.events = 0
-        
-        self.update(0)
+    
     
     def enter(self):
         if not self.events:
