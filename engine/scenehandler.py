@@ -84,7 +84,12 @@ class SceneHandler(actionsequencer.ActionSequencer):
     def fade_to_explore(self, name):
         texts = {}
         
-        InterpClass = interpolator.LinearInterpolator
+        def blackouter(start, end, done_func):
+            InterpClass = interpolator.LinearInterpolator
+            interp = InterpClass(self, 'blackout_alpha', end=end, start=start,
+                                duration=self.fade_time,
+                                done_function=done_func)
+            self.controller.add_interpolator(interp)
         
         def complete_transition(ending_action=None):
             self.scene.enter()
@@ -93,9 +98,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
         def fade_in(ending_action=None):
             # Remove scene
             self.set_scenes(explorescene.ExploreScene(name, self, texts))
-            interp = InterpClass(self, 'blackout_alpha', end=0, start=1.0, duration=self.fade_time,
-                                done_function=complete_transition)
-            self.controller.add_interpolator(interp)
+            blackouter(1.0, 0.0, complete_transition)
         
         def check_fade_in(dt=0):
             n = min(name, 5)
@@ -112,9 +115,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
                 pyglet.clock.schedule_once(check_fade_in, 0.5)
         
         self.scene.exit()
-        interp = InterpClass(self, 'blackout_alpha', end=1.0, start=0, duration=self.fade_time,
-                            done_function=check_fade_in)
-        self.controller.add_interpolator(interp)
+        blackouter(0.0, 1.0, check_fade_in)
     
     def update(self, dt=0):
         self.controller.update_interpolators(dt)
