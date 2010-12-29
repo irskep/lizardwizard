@@ -113,7 +113,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
         
         
         self.scene.exit()
-        self.fs = self.fade_sprite_2
+        self.fs = self.fade_sprite
         self.blackouter(0.0, 1.0, check_fade_in)
     
     def begin_explore(self, name, texts):
@@ -128,7 +128,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
         
         
         self.scene.exit()
-        self.fs = self.fade_sprite
+        self.fs = self.fade_sprite_2
         self.blackouter(0.0, 1.0, fade_in)
     
     def update(self, dt=0):

@@ -3,6 +3,8 @@ import itertools
 
 preexplore = pyglet.resource.image('game/images/preexplore.png')
 
+font = pyglet.resource.add_font('game/Fortunaschwein_complete.ttf')
+
 walk_sequences = {
     'player': [pyglet.resource.image('game/images/player_walk_%d.png' % f) for f in (1, 2)],
     'fly': [pyglet.resource.image('game/images/fly_%d.png' % f) for f in (1, 2)]
