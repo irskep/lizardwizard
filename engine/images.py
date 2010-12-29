@@ -1,7 +1,7 @@
 import pyglet
 import itertools
 
-# home = pyglet.resource.image('game/images/home.png')
+preexplore = pyglet.resource.image('game/images/preexplore.png')
 
 walk_sequences = {
     'player': [pyglet.resource.image('game/images/player_walk_%d.png' % f) for f in (1, 2)],

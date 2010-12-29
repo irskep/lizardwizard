@@ -162,6 +162,7 @@ class ExploreScene(scene.Scene):
         return (x/gamestate.scale_factor+self.camera.x-gamestate.norm_w//2,
                 y/gamestate.scale_factor+self.camera.y-gamestate.norm_h//2)
     
+    
     # Physics
     
     def enforce_wall_hugging(self, space, arbiter, *args, **kwargs):
@@ -196,6 +197,7 @@ class ExploreScene(scene.Scene):
                     a.parent.tongue_state = player.TONGUE_ENTERING
                 return False
         return True
+    
     
     # Update/draw
     

@@ -11,9 +11,8 @@ YEEEAAAHHH
 try:
     import psyco
     psyco.full()
-    print 'PSYCO ENABLED, GO GO GO!'
 except ImportError:
-    print 'You should probably install psyco. It runs on Python 2.6 and under.'
+    print 'Lizard Wizard may run faster if you install Psyco.'
     pass
 
 import os

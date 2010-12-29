@@ -12,6 +12,7 @@ import pyglet
 import actionsequencer
 import explorescene
 import gamestate
+import preexplorescene
 import scene
 import util
 from util import interpolator
@@ -75,21 +76,17 @@ class SceneHandler(actionsequencer.ActionSequencer):
     
     def __repr__(self):
         return "SceneHandler(scene_object=%s)" % str(self.scene)
-
-    # Called by a scene to load a new scene.
-    # If dir is specified a sliding transition is used
-    def go_to(self, name=1):
-        self.fade_to_explore(name)
     
-    def fade_to_explore(self, name):
+    
+    def blackouter(self, start, end, done_func):
+        InterpClass = interpolator.LinearInterpolator
+        interp = InterpClass(self, 'blackout_alpha', end=end, start=start,
+                            duration=self.fade_time,
+                            done_function=done_func)
+        self.controller.add_interpolator(interp)
+    
+    def go_to(self, name):
         texts = {}
-        
-        def blackouter(start, end, done_func):
-            InterpClass = interpolator.LinearInterpolator
-            interp = InterpClass(self, 'blackout_alpha', end=end, start=start,
-                                duration=self.fade_time,
-                                done_function=done_func)
-            self.controller.add_interpolator(interp)
         
         def complete_transition(ending_action=None):
             self.scene.enter()
@@ -97,8 +94,8 @@ class SceneHandler(actionsequencer.ActionSequencer):
         
         def fade_in(ending_action=None):
             # Remove scene
-            self.set_scenes(explorescene.ExploreScene(name, self, texts))
-            blackouter(1.0, 0.0, complete_transition)
+            self.set_scenes(preexplorescene.PreExploreScene(name, self, texts))
+            self.blackouter(1.0, 0.0, complete_transition)
         
         def check_fade_in(dt=0):
             n = min(name, 5)
@@ -114,8 +111,25 @@ class SceneHandler(actionsequencer.ActionSequencer):
             else:
                 pyglet.clock.schedule_once(check_fade_in, 0.5)
         
+        
         self.scene.exit()
-        blackouter(0.0, 1.0, check_fade_in)
+        self.fs = self.fade_sprite_2
+        self.blackouter(0.0, 1.0, check_fade_in)
+    
+    def begin_explore(self, name, texts):
+        def complete_transition(ending_action=None):
+            self.scene.enter()
+            self.next_action()
+        
+        def fade_in(ending_action=None):
+            # Remove scene
+            self.set_scenes(explorescene.ExploreScene(name, self, texts))
+            self.blackouter(1.0, 0.0, complete_transition)
+        
+        
+        self.scene.exit()
+        self.fs = self.fade_sprite
+        self.blackouter(0.0, 1.0, fade_in)
     
     def update(self, dt=0):
         self.controller.update_interpolators(dt)

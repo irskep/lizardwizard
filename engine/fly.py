@@ -15,10 +15,11 @@ colorsf = [(1.0, 0.0, 0.0), (1.0, 0.5, 0.0), (1.0, 1.0, 0.0),
 colorsb = [tuple([int(255*i) for i in c]) for c in colorsf]
 
 class Fly(actor.Actor):
-    def __init__(self, scn, batch, x, y, piece, color=0):
+    def __init__(self, scn, batch, x, y, piece, color=0, good=True):
         super(Fly, self).__init__(scn, batch, kind='fly', x=x, y=y)
         self.sprite.color = colorsb[color % len(colorsb)]
         self.piece = piece
+        self.good = good
         self.sprite.group = pyglet.graphics.OrderedGroup(1)
         self.angle_target = random.random()*math.pi*2.0
         self.body.angle = random.random()*math.pi*2.0
