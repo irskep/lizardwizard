@@ -6,6 +6,7 @@ import pyglet
 import pymunk
 import itertools
 import functools
+import random
 
 import actor
 import camera
@@ -109,6 +110,7 @@ class ExploreScene(scene.Scene):
                 gamestate.main_window.pop_handlers()
     
     def load(self):
+        random.shuffle(fly.colorsb)
         self.grid = []
         with pyglet.resource.file('game/levels/%d.txt' % ((self.name-1) % NUM_LEVELS)) as f:
             for line in f:
@@ -242,10 +244,11 @@ class ExploreScene(scene.Scene):
                 x2, y2 = x1, l.y+5
                 x3, y3 = x+w, y2
                 x4, y4 = x3, y1
+                c = fly.color_for_title(title) + (255,)
                 self.hud_batch.add(4, pyglet.gl.GL_QUADS, pyglet.graphics.OrderedGroup(2),
                                    ('v2f/static', (x1, y1, x2, y2, 
                                                    x3, y3, x4, y4)),
-                                   ('c4B/static', (50,80,128,255)*4))
+                                   ('c4B/static', c*4))
     
     def update(self, dt=0):
         if self.paused: 

@@ -86,6 +86,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
         self.controller.add_interpolator(interp)
     
     def go_to(self, name):
+        name = 2 if name < 2 else name
         texts = {}
         
         def complete_transition(ending_action=None):
@@ -130,6 +131,7 @@ class SceneHandler(actionsequencer.ActionSequencer):
         self.scene.exit()
         self.fs = self.fade_sprite_2
         self.blackouter(0.0, 1.0, fade_in)
+    
     
     def update(self, dt=0):
         self.controller.update_interpolators(dt)

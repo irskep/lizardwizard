@@ -14,10 +14,24 @@ colorsf = [(1.0, 0.0, 0.0), (1.0, 0.5, 0.0), (1.0, 1.0, 0.0),
            (0.5, 0.0, 1.0), (1.0, 0.0, 1.0), (1.0, 0.0, 0.5)]
 colorsb = [tuple([int(255*i) for i in c]) for c in colorsf]
 
+def cycle_color_indexes_gen():
+    i = 0
+    while True:
+        yield i
+        i = (i + 1) % len(colorsb)
+
+color_indexes_cycler = cycle_color_indexes_gen()
+
+color_map = {}
+def color_for_title(t):
+    if not color_map.has_key(t):
+        color_map[t] = colorsb[color_indexes_cycler.next()]
+    return color_map[t]
+
 class Fly(actor.Actor):
-    def __init__(self, scn, batch, x, y, piece, color=0, good=True):
+    def __init__(self, scn, batch, x, y, piece, good=True):
         super(Fly, self).__init__(scn, batch, kind='fly', x=x, y=y)
-        self.sprite.color = colorsb[color % len(colorsb)]
+        self.sprite.color = color_for_title(piece[0])
         self.piece = piece
         self.good = good
         self.sprite.group = pyglet.graphics.OrderedGroup(1)
